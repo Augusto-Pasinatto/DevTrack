@@ -1,8 +1,8 @@
 # DevTrack — Acompanhamento de Aprendizado Dev
 
-Aplicação web (SPA simples) para acompanhar o que estou estudando: linguagens, frameworks e ferramentas, com o nível, o status e as sessões de estudo de cada um.
+Aplicação web para acompanhar o que estou estudando: linguagens, frameworks e ferramentas, com o nível, o status e as sessões de estudo de cada um.
 
-> **Princípio do projeto:** simples, mas tudo funcionando. Melhor ter poucas telas completas (com loading, erro, validação e acessibilidade) do que muitas pela metade.
+A interface tem **estética "Hacker"**: visual de terminal, fundo escuro, verde fósforo e fonte monoespaçada. A especificação completa está na [seção 14](#14-identidade-visual-estética-hacker).
 
 ---
 
@@ -11,7 +11,8 @@ Aplicação web (SPA simples) para acompanhar o que estou estudando: linguagens,
 | Camada | Escolha |
 |---|---|
 | Estrutura | HTML5 semântico (`header`, `nav`, `main`, `section`, `article`, `dialog`, `footer`) |
-| Estilo | Bootstrap 5 (via CDN) + `css/style.css` para ajustes |
+| Estilo | Bootstrap 5.3 (via CDN) com `data-bs-theme="dark"` + `css/style.css` com o tema Hacker (seção 14) |
+| Tipografia | JetBrains Mono (Google Fonts), com alternativas monoespaçadas do sistema |
 | Comportamento | JavaScript puro (ES Modules), **Fetch API** |
 | Back-end em desenvolvimento | **json-server** local (mesmas rotas do MockAPI) |
 | Back-end final | **MockAPI.io** (plano free: 1 projeto, 2 recursos) |
@@ -83,7 +84,7 @@ Sem jQuery, sem frameworks JS e sem build. Basta abrir com o Live Server.
 Tudo acontece em **uma página só**. As trocas de conteúdo são feitas pelo DOM, sem recarregar a página.
 
 ### 4.1 Cabeçalho + resumo (dashboard)
-- Título do app e o botão **"+ Nova tecnologia"**.
+- Título do app em formato de prompt (`devtrack@local:~$`, com cursor piscando) e o botão **"+ Nova tecnologia"**.
 - Quatro cards de resumo, calculados no front a partir dos dados já carregados:
   - total de tecnologias;
   - quantas estão em "estudando";
@@ -94,7 +95,7 @@ Tudo acontece em **uma página só**. As trocas de conteúdo são feitas pelo DO
 - Grade de cards (1 coluna no celular, 2 no tablet, 3 no desktop).
 - Cada card mostra:
   - nome, badge da categoria e badge do status (com cor);
-  - nível em estrelas (★★★☆☆) com `aria-label="Nível 3 de 5"`;
+  - nível em barra de terminal (`[■■■□□]`) com `role="img"` e `aria-label="Nível 3 de 5"`;
   - botões **−** e **+** para mudar o nível (**PATCH**);
   - `select` de status rápido (**PATCH**);
   - botões "Detalhes", "Editar" e "Excluir".
@@ -137,7 +138,7 @@ Toda chamada à API precisa tratar estes três estados:
    - mostrar a mensagem e manter os dados do formulário (não perder o que o usuário digitou);
    - no carregamento inicial, mostrar um bloco de erro com o botão **"Tentar novamente"**.
 
-**Atualização otimista no PATCH (opcional, mas fica muito bom):** atualizar as estrelas na hora; se a requisição falhar, voltar ao valor anterior e mostrar o erro.
+**Atualização otimista no PATCH (opcional, mas fica muito bom):** atualizar a barra de nível na hora; se a requisição falhar, voltar ao valor anterior e mostrar o erro.
 
 ---
 
@@ -209,12 +210,13 @@ devtrack/
 - [ ] Um único `<h1>` e hierarquia correta de títulos
 - [ ] Todo campo tem um `<label>` associado
 - [ ] Botões de ícone (+, −, lixeira) com `aria-label`
-- [ ] Estrelas de nível com texto alternativo ("Nível 3 de 5")
+- [ ] Barra de nível com texto alternativo ("Nível 3 de 5")
 - [ ] Toasts em uma região `aria-live="polite"`
 - [ ] Modais: o foco vai para dentro ao abrir e volta para o botão de origem ao fechar (o Bootstrap já ajuda), e `Esc` fecha
 - [ ] Tudo usável só com teclado (Tab, Enter, Espaço), com foco visível
 - [ ] Contraste das badges conferido (por exemplo, no WebAIM Contrast Checker)
 - [ ] Status não indicado só por cor: a badge também tem texto
+- [ ] Animações (cursor, varredura) desligadas com `prefers-reduced-motion: reduce`
 
 ## 10. Responsividade (checklist)
 
@@ -230,7 +232,7 @@ devtrack/
 
 ### Fase 1: Estrutura
 - [ ] `index.html` semântico com cabeçalho, dashboard, filtros, grade e modais (estáticos)
-- [ ] Bootstrap + `style.css` com a identidade visual básica
+- [ ] Bootstrap + `style.css` com o tema Hacker (variáveis, tipografia e componentes da seção 14)
 - [ ] `db.json` com 5–6 tecnologias e algumas sessões de exemplo
 
 ### Fase 2: Leitura (GET)
@@ -267,7 +269,7 @@ devtrack/
 ## 12. Extras (só se sobrar tempo)
 
 - Gráfico simples de minutos por tecnologia, feito com barras em CSS (sem biblioteca)
-- Tema claro/escuro (`data-bs-theme`)
+- Efeito de digitação no título, respeitando `prefers-reduced-motion`
 - Contador de dias seguidos estudando (streak), calculado a partir das sessões
 - Exportar os dados em JSON
 
@@ -278,7 +280,7 @@ devtrack/
 | Requisito | Onde |
 |---|---|
 | HTML semântico | Seção 4 + checklist 9 |
-| CSS / Bootstrap | Seção 1 |
+| CSS / Bootstrap | Seções 1 e 14 |
 | Responsividade | Checklist 10 |
 | Manipulação do DOM (adicionar, remover, editar) | Cards, sessões e dashboard (seção 4) |
 | Validação client-side | Seção 6 |
@@ -288,3 +290,56 @@ devtrack/
 | Estados de carregamento e erro + `response.ok` | Seção 5 |
 | Qualidade do código | Seção 7 |
 | Acessibilidade | Checklist 9 |
+
+---
+
+## 14. Identidade visual: estética Hacker
+
+O app deve parecer um terminal, mas continuar fácil de ler e de usar. O tema é **apenas escuro**. Os textos seguem em português claro: a estética muda a aparência, não o significado das mensagens.
+
+### Paleta
+
+Definir as cores como variáveis CSS em `:root`, no `css/style.css`.
+
+| Variável | Cor | Uso |
+|---|---|---|
+| `--hk-fundo` | `#0A0F0A` | Fundo da página |
+| `--hk-superficie` | `#101A12` | Cards, filtros e cabeçalho |
+| `--hk-elevada` | `#162419` | Modais, toasts e campos de formulário |
+| `--hk-borda` | `#3F8A52` | Bordas e divisores (não usar em texto) |
+| `--hk-texto` | `#C8F7D0` | Texto principal |
+| `--hk-secundario` | `#7FB88A` | Texto de apoio, legendas e placeholders |
+| `--hk-verde` | `#00FF41` | Destaque principal, títulos, botão primário e status `domino` |
+| `--hk-ciano` | `#00E5FF` | Links, foco do teclado e status `quero-aprender` |
+| `--hk-ambar` | `#FFB000` | Avisos e status `estudando` |
+| `--hk-vermelho` | `#FF5F56` | Erros e ações de exclusão |
+
+**Contraste (WCAG AA):** todas as cores de texto atingem pelo menos 5,4:1 sobre os três fundos. O texto `--hk-fundo` sobre botão verde atinge 14,2:1 e, sobre botão vermelho, 6,5:1. A borda atinge pelo menos 3,8:1, suficiente para elementos que não são texto.
+
+### Tipografia
+
+- Fonte única: `"JetBrains Mono", "Fira Code", Consolas, monospace`.
+- Pesos 400 (texto) e 700 (títulos e botões).
+- Texto principal em `--hk-texto`. O verde puro fica restrito a destaques, porque cansa a vista em textos longos.
+
+### Componentes
+
+| Elemento | Como fica |
+|---|---|
+| Geral | Cantos retos (`--bs-border-radius: 0`) e sem sombras, exceto o brilho descrito abaixo |
+| Cards | Fundo `--hk-superficie`, borda de 1px e cabeçalho no estilo `> JavaScript` |
+| Botões | Contorno de 1px e fundo transparente; ao passar o mouse ou focar, o fundo é preenchido com a cor do botão e o texto usa `--hk-fundo` |
+| Campos | Fundo `--hk-elevada`, borda de 1px e cursor (`caret-color`) verde |
+| Badges | Texto em maiúsculas entre colchetes, com contorno na cor do status: `[ESTUDANDO]`, `[DOMINO]`, `[QUERO APRENDER]` |
+| Nível | Barra `[■■■□□]` em verde, no lugar das estrelas |
+| Carregando | Spinner do Bootstrap em verde com o texto `Carregando…`, mantendo `role="status"` |
+| Toasts | Prefixo por tipo: `[OK] Tecnologia salva`, `[ERRO] Não foi possível conectar ao servidor. Tente novamente.` |
+| Estado vazio | `> Você ainda não cadastrou nenhuma tecnologia`, com cursor piscando |
+| Foco do teclado | Contorno sólido de 2px em `--hk-ciano`, sempre visível |
+
+### Efeitos
+
+- **Cursor piscando** no título e no estado vazio.
+- **Brilho leve** (`text-shadow`) apenas no título e nos botões em destaque.
+- **Linhas de varredura (scanlines):** sobreposição fixa bem sutil, com `pointer-events: none`, sem prejudicar a leitura.
+- Com `prefers-reduced-motion: reduce`, nada se move: o cursor fica fixo e não há animação de varredura.
