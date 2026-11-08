@@ -1,0 +1,741 @@
+=====================================================================
+ DevTrack — Explicação do Bootstrap usado no index.html
+=====================================================================
+
+Este arquivo lista TODAS as classes do Bootstrap que aparecem no
+index.html, explicando o que cada uma faz e onde ela é usada.
+A lista foi gerada varrendo o index.html: 117 classes do Bootstrap
+e 3 classes próprias do projeto (prefixo "hk-").
+
+
+---------------------------------------------------------------------
+ 1. O QUE É O BOOTSTRAP E COMO ELE ENTRA NA PÁGINA
+---------------------------------------------------------------------
+
+O Bootstrap é um framework de CSS (com um pouco de JavaScript) que
+traz estilos prontos. Em vez de escrever CSS para tudo, aplicamos
+classes no HTML. Exemplo: class="btn btn-success" já vira um botão
+verde, com espaçamento, borda e estados de hover e foco.
+
+No DevTrack ele entra por CDN (versão 5.3.3), sem instalar nada:
+
+  - CSS, no <head>:
+      bootstrap.min.css
+    Logo depois vem o css/style.css. A ordem importa: o style.css
+    vem por último para poder sobrescrever o Bootstrap (é nele que
+    vai ficar o tema Hacker).
+
+  - JavaScript, no fim do <body>:
+      bootstrap.bundle.min.js
+    O "bundle" já inclui o Popper. É esse arquivo que faz os modais
+    abrirem e fecharem e os toasts aparecerem.
+
+  - integrity="sha384-..." e crossorigin="anonymous":
+    o navegador confere se o arquivo baixado do CDN é exatamente o
+    esperado. Se alguém alterar o arquivo no servidor, ele não roda.
+
+
+---------------------------------------------------------------------
+ 2. CONCEITOS QUE AJUDAM A LER AS CLASSES
+---------------------------------------------------------------------
+
+Breakpoints (larguras de tela)
+  Muitas classes têm um "infixo" de tamanho, como col-md-4. Ele
+  quer dizer: "a partir desta largura, vale esta regra".
+
+    (sem infixo)   vale sempre, desde o celular
+    sm             a partir de 576px
+    md             a partir de 768px  (tablet)
+    lg             a partir de 992px  (desktop)
+    xl             a partir de 1200px
+    xxl            a partir de 1400px
+
+  O Bootstrap é "mobile first": a classe sem infixo define o
+  celular, e as com infixo mudam o layout em telas maiores.
+
+Escala de espaçamento
+  Classes de margem (m) e preenchimento (p) usam números de 0 a 5:
+
+    0 = 0       1 = 0,25rem (4px)    2 = 0,5rem (8px)
+    3 = 1rem (16px)    4 = 1,5rem (24px)    5 = 3rem (48px)
+    auto = margem automática
+
+  E uma letra para o lado:
+
+    t = topo    b = baixo (bottom)    s = início (start, esquerda)
+    e = fim (end, direita)    x = esquerda e direita
+    y = topo e baixo    (sem letra) = todos os lados
+
+  Exemplo: mb-3 = margin-bottom de 1rem. py-5 = padding em cima e
+  embaixo de 3rem.
+
+Cores semânticas
+  O Bootstrap nomeia as cores pela função, não pelo tom:
+
+    success = verde    info = ciano    warning = amarelo/âmbar
+    danger = vermelho  secondary = cinza    light = claro
+
+  No DevTrack essas cores casam com a paleta Hacker do plano
+  (seção 14): success = --hk-verde, info = --hk-ciano,
+  warning = --hk-ambar e danger = --hk-vermelho. O style.css vai
+  redefinir as variáveis do Bootstrap para usar esses tons.
+
+Tema escuro: data-bs-theme="dark"
+  Está na tag <html>. Faz o Bootstrap inteiro usar as cores do modo
+  escuro (fundo escuro, texto claro, bordas e campos adaptados).
+  É a base do tema Hacker, que é apenas escuro.
+
+
+---------------------------------------------------------------------
+ 3. LAYOUT E GRID
+---------------------------------------------------------------------
+
+O grid do Bootstrap divide a largura em 12 colunas. Uma .row agrupa
+colunas, e cada .col-* diz quantas das 12 partes ela ocupa.
+
+container
+  Centraliza o conteúdo e limita a largura máxima conforme a tela,
+  com um respiro nas laterais.
+  Onde: dentro do <header>, no <main> e dentro do <footer>.
+
+row
+  Cria uma linha do grid. Os filhos diretos viram colunas.
+  Onde: cards de resumo, grade de tecnologias, filtros, campos
+  Nível/Status do modal, formulário de sessão e lista <dl> de
+  detalhes.
+
+col
+  Coluna sem largura fixa: as colunas dividem o espaço da linha.
+  Combinada com row-cols-*, quem define quantas cabem por linha é
+  a .row.
+  Onde: cada card de resumo e cada card de tecnologia.
+
+col-12
+  Ocupa as 12 colunas (largura total).
+  Onde: busca e ordenação nos filtros (no celular), anotação e
+  botão do formulário de sessão.
+
+col-6
+  Ocupa 6 de 12 colunas (metade da largura).
+  Onde: Categoria e Status nos filtros, Nível e Status no modal,
+  Data e Minutos na sessão.
+
+col-md-2
+  A partir de 768px, ocupa 2 de 12 colunas.
+  Onde: filtro de status.
+
+col-md-3
+  A partir de 768px, ocupa 3 de 12 colunas.
+  Onde: filtro de categoria, ordenação, Data e Minutos da sessão.
+
+col-md-4
+  A partir de 768px, ocupa 4 de 12 colunas.
+  Onde: campo de busca.
+
+col-md-6
+  A partir de 768px, ocupa 6 de 12 colunas.
+  Onde: campo Anotação da sessão.
+
+  -> Juntas, essas classes fazem os filtros ficarem empilhados no
+     celular e em uma única linha no desktop (checklist 10).
+
+col-sm-4
+  A partir de 576px, ocupa 4 de 12 colunas.
+  Onde: os rótulos (<dt>) da lista de detalhes.
+
+col-sm-8
+  A partir de 576px, ocupa 8 de 12 colunas.
+  Onde: os valores (<dd>) da lista de detalhes. Com col-sm-4, o
+  rótulo fica à esquerda e o valor à direita; no celular, um
+  embaixo do outro.
+
+row-cols-1
+  Na .row: 1 coluna por linha.
+  Onde: grade de tecnologias (celular).
+
+row-cols-2
+  Na .row: 2 colunas por linha.
+  Onde: cards de resumo (celular: 2 x 2).
+
+row-cols-md-2
+  Na .row: 2 colunas por linha a partir de 768px.
+  Onde: grade de tecnologias (tablet).
+
+row-cols-lg-3
+  Na .row: 3 colunas por linha a partir de 992px.
+  Onde: grade de tecnologias (desktop).
+
+row-cols-lg-4
+  Na .row: 4 colunas por linha a partir de 992px.
+  Onde: cards de resumo (desktop: os 4 lado a lado).
+
+g-2
+  "Gutter": espaço de 0,5rem entre as colunas e entre as linhas.
+  Onde: filtros e formulário de sessão.
+
+g-3
+  Espaço de 1rem entre colunas e linhas.
+  Onde: cards de resumo, grade de tecnologias e Nível/Status no
+  modal.
+
+
+---------------------------------------------------------------------
+ 4. FLEXBOX E DISPLAY
+---------------------------------------------------------------------
+
+d-flex
+  Aplica display: flex. Os filhos ficam lado a lado e podem ser
+  alinhados com as classes abaixo.
+  Onde: cabeçalho, corpo e rodapé dos cards, linha do nível,
+  itens da lista de sessões e toast.
+
+flex-column
+  Muda a direção do flex para vertical (um embaixo do outro).
+  Onde: corpo dos cards de tecnologia.
+
+flex-wrap
+  Deixa os itens quebrarem para a linha de baixo quando não cabem.
+  Onde: cabeçalho da página e botões no rodapé dos cards.
+
+justify-content-between
+  Joga o primeiro item para o início, o último para o fim e
+  distribui o espaço entre eles.
+  Onde: cabeçalho (título à esquerda, botão à direita), nome e
+  status no card, itens da lista de sessões.
+
+align-items-center
+  Centraliza os itens na vertical.
+  Onde: cabeçalho, linha do nível (− [■■■□□] +) e toast.
+
+align-items-start
+  Alinha os itens pelo topo.
+  Onde: nome e badge do card, formulário de sessão (os campos
+  ficam alinhados mesmo quando um mostra mensagem de erro) e
+  itens da lista de sessões.
+
+gap-2
+  Espaço de 0,5rem entre os itens do flex.
+  Onde: card, linha do nível, botões do rodapé, sessões.
+
+gap-3
+  Espaço de 1rem entre os itens do flex.
+  Onde: cabeçalho e corpo dos cards de tecnologia.
+
+d-none
+  Esconde o elemento (display: none).
+  Onde: blocos de carregando, erro e lista vazia, e os spinners
+  dentro dos botões. O JavaScript vai tirar e pôr essa classe para
+  mostrar o estado certo de cada momento (seção 5 do plano).
+
+
+---------------------------------------------------------------------
+ 5. ESPAÇAMENTO (MARGEM E PREENCHIMENTO)
+---------------------------------------------------------------------
+(Veja a escala de números e letras na parte 2.)
+
+mb-0
+  Remove a margem de baixo. Títulos e parágrafos têm margem
+  padrão; aqui ela é tirada quando o elemento já está dentro de um
+  flex com gap.
+  Onde: vários títulos e parágrafos.
+
+mb-1
+  Margem de baixo de 0,25rem.
+  Onde: rótulo "Status" nos cards e data das sessões.
+
+mb-2
+  Margem de baixo de 0,5rem.
+  Onde: títulos dos cards de resumo e mensagem de erro.
+
+mb-3
+  Margem de baixo de 1rem.
+  Onde: títulos das seções e grupos de campos no modal.
+
+mb-4
+  Margem de baixo de 1,5rem.
+  Onde: filtros, lista de detalhes e bloco "Registrar sessão".
+
+mb-5
+  Margem de baixo de 3rem.
+  Onde: seção de resumo, separando-a do painel de tecnologias.
+
+mt-5
+  Margem de cima de 3rem.
+  Onde: rodapé.
+
+me-1
+  Margem à direita de 0,25rem.
+  Onde: spinner pequeno dentro dos botões Salvar, Registrar e
+  Excluir, separando-o do texto.
+
+me-2
+  Margem à direita de 0,5rem.
+  Onde: botão de fechar do toast.
+
+ms-auto
+  Margem automática à esquerda: empurra o elemento para a direita.
+  Onde: botão "Excluir" no rodapé dos cards, que fica separado dos
+  outros para evitar clique por engano.
+
+m-auto
+  Margem automática em todos os lados: centraliza o elemento.
+  Onde: botão de fechar do toast (centraliza na vertical).
+
+p-3
+  Preenchimento de 1rem em todos os lados.
+  Onde: área dos toasts, afastando-os da borda da tela.
+
+px-0
+  Remove o preenchimento das laterais.
+  Onde: itens da lista de sessões, para alinharem com o resto do
+  modal.
+
+py-3
+  Preenchimento de 1rem em cima e embaixo.
+  Onde: cabeçalho e rodapé.
+
+py-4
+  Preenchimento de 1,5rem em cima e embaixo.
+  Onde: <main>.
+
+py-5
+  Preenchimento de 3rem em cima e embaixo.
+  Onde: blocos de carregando e lista vazia.
+
+
+---------------------------------------------------------------------
+ 6. TAMANHO
+---------------------------------------------------------------------
+
+h-100
+  Altura de 100% do elemento pai.
+  Onde: todos os cards. Faz os cards de uma mesma linha ficarem com
+  a mesma altura, mesmo com textos de tamanhos diferentes.
+
+
+---------------------------------------------------------------------
+ 7. TIPOGRAFIA
+---------------------------------------------------------------------
+
+h4 / h5 / h6
+  Aplicam o TAMANHO visual de um título, sem mudar a tag. Assim a
+  hierarquia correta (h1 > h2 > h3) é mantida para acessibilidade,
+  mas o tamanho fica adequado ao layout.
+  Onde: h4 no <h1> do topo; h5 nos <h2> das seções e modais e nos
+  <h3> dos cards; h6 nos <h3> do resumo e dos detalhes.
+
+fs-3
+  Tamanho de fonte grande (nível 3 da escala do Bootstrap).
+  Onde: números dos cards de resumo.
+
+fw-bold
+  Texto em negrito.
+  Onde: números do resumo, total estudado e datas das sessões.
+
+small
+  Texto menor (cerca de 87,5% do tamanho normal).
+  Onde: metas dos cards, rótulos de status, anotações e rodapé.
+
+text-center
+  Centraliza o texto.
+  Onde: blocos de carregando e lista vazia.
+
+text-break
+  Quebra palavras muito longas para não estourar o card.
+  Onde: nome da tecnologia nos cards.
+
+text-truncate
+  Corta o texto que não cabe em uma linha e coloca "…" no fim.
+  Onde: "Mais estudada" no resumo, caso o nome seja comprido.
+
+
+---------------------------------------------------------------------
+ 8. CORES DE TEXTO
+---------------------------------------------------------------------
+
+text-body-secondary
+  Cor de texto secundária (mais apagada), adaptada ao tema escuro.
+  Onde: títulos do resumo, metas, anotações, "(opcional)", estado
+  vazio, badges de categoria e rodapé.
+
+text-success
+  Texto na cor success (verde).
+  Onde: badge [DOMINO] e spinner de carregamento.
+
+text-info
+  Texto na cor info (ciano).
+  Onde: badge [QUERO APRENDER].
+
+text-warning
+  Texto na cor warning (âmbar).
+  Onde: badge [ESTUDANDO].
+
+
+---------------------------------------------------------------------
+ 9. BORDAS
+---------------------------------------------------------------------
+
+border
+  Adiciona borda de 1px em todos os lados.
+  Onde: todas as badges (que ficam com contorno, no estilo terminal).
+
+border-top
+  Borda só em cima.
+  Onde: rodapé.
+
+border-bottom
+  Borda só embaixo.
+  Onde: cabeçalho.
+
+border-success / border-info / border-warning / border-secondary
+  Definem a cor da borda (verde, ciano, âmbar ou cinza).
+  Onde: badges de status (cada status com a sua cor), badges de
+  categoria (secondary) e toast (success).
+
+  -> Badge = border + border-<cor> + text-<cor>. O status nunca é
+     mostrado só pela cor: o texto [ESTUDANDO] também está lá
+     (checklist 9).
+
+
+---------------------------------------------------------------------
+ 10. POSICIONAMENTO
+---------------------------------------------------------------------
+
+position-fixed
+  Fixa o elemento na tela: ele não sai do lugar ao rolar a página.
+  Onde: área dos toasts.
+
+bottom-0
+  Encosta o elemento na parte de baixo.
+  Onde: área dos toasts.
+
+end-0
+  Encosta o elemento no lado final (direita).
+  Onde: área dos toasts. Juntas, as três classes põem os toasts no
+  canto inferior direito.
+
+
+---------------------------------------------------------------------
+ 11. ACESSIBILIDADE
+---------------------------------------------------------------------
+
+visually-hidden
+  Esconde o elemento da tela, mas mantém para leitores de tela.
+  Onde: o nome "DevTrack" no <h1> (na tela aparece o prompt
+  devtrack@local:~$) e o texto "Carregando…" dentro do spinner.
+
+visually-hidden-focusable
+  Igual ao anterior, mas o elemento aparece quando recebe foco pelo
+  teclado.
+  Onde: link "Pular para o conteúdo", o primeiro item da página.
+  Quem navega com Tab pode pular direto para o <main>.
+
+
+---------------------------------------------------------------------
+ 12. COMPONENTES
+---------------------------------------------------------------------
+
+--- 12.1 Navegação ---
+
+nav
+  Lista de links de navegação, em linha e sem marcadores.
+  Onde: <ul> dentro do <nav> do cabeçalho.
+
+nav-item
+  Cada item da navegação.
+  Onde: os <li> "Resumo" e "Tecnologias".
+
+nav-link
+  O link em si, com espaçamento e estados de hover e foco.
+  Onde: os <a> que levam a #resumo e #tecnologias.
+
+--- 12.2 Botões ---
+
+btn
+  Classe base de todo botão: espaçamento, fonte, borda e estados de
+  hover, foco e desabilitado. Sempre combinada com uma de cor.
+  Onde: todos os botões da página.
+
+btn-success
+  Botão preenchido verde. Ação principal.
+  Onde: Salvar, Registrar sessão e Cadastrar tecnologia.
+
+btn-danger
+  Botão preenchido vermelho. Ação destrutiva confirmada.
+  Onde: "Excluir" dentro do modal de confirmação.
+
+btn-outline-success
+  Botão só com contorno verde (preenche ao passar o mouse).
+  Onde: "+ Nova tecnologia" e botões − e + do nível.
+
+btn-outline-info
+  Botão com contorno ciano.
+  Onde: "Detalhes" nos cards.
+
+btn-outline-light
+  Botão com contorno claro.
+  Onde: "Editar" nos cards.
+
+btn-outline-danger
+  Botão com contorno vermelho.
+  Onde: "Excluir" nos cards e nas sessões, e "Tentar novamente".
+
+btn-outline-secondary
+  Botão com contorno cinza. Ação neutra.
+  Onde: "Cancelar" nos modais.
+
+  -> O plano pede botões com contorno no tema Hacker; por isso a
+     maioria usa btn-outline-*.
+
+btn-sm
+  Versão menor do botão.
+  Onde: botões do rodapé dos cards, "Tentar novamente" e "Excluir"
+  das sessões. Os botões − e + NÃO usam btn-sm, para manter uma
+  área de toque confortável (checklist 10).
+
+btn-close
+  Botão "X" de fechar, já desenhado pelo Bootstrap. Como não tem
+  texto, recebe aria-label="Fechar".
+  Onde: cabeçalho dos modais e toast.
+
+--- 12.3 Cards ---
+
+card
+  Caixa com borda, fundo e cantos para agrupar conteúdo.
+  Onde: cards de resumo e cards de tecnologia.
+
+card-body
+  Área interna do card, com preenchimento.
+  Onde: todos os cards.
+
+card-title
+  Título do card.
+  Onde: nome da tecnologia.
+
+card-subtitle
+  Subtítulo do card.
+  Onde: rótulos dos cards de resumo ("Total de tecnologias" etc.).
+
+card-text
+  Texto do card (ajusta a margem do último parágrafo).
+  Onde: números do resumo e metas.
+
+card-footer
+  Faixa no fim do card, separada por uma borda.
+  Onde: botões Detalhes, Editar e Excluir.
+
+--- 12.4 Badge ---
+
+badge
+  Etiqueta pequena, em negrito, para rótulos curtos.
+  Onde: status e categoria nos cards e status nos detalhes.
+
+--- 12.5 Formulários ---
+
+form-label
+  Estilo do <label> acima do campo. O <label for="..."> continua
+  ligado ao campo pelo id.
+  Onde: todos os rótulos.
+
+form-control
+  Estilo dos campos de texto, número, data, busca e <textarea>:
+  largura total, borda e destaque no foco.
+  Onde: busca, Nome, Nível, Meta, Data, Minutos e Anotação.
+
+form-select
+  Mesmo estilo, só que para <select>, com a seta desenhada.
+  Onde: filtros, Categoria e Status do modal e status nos cards.
+
+form-select-sm
+  <select> menor.
+  Onde: status rápido nos cards.
+
+form-text
+  Texto de ajuda abaixo do campo, em cor mais apagada.
+  Onde: "Até 120 caracteres." no campo Meta.
+
+invalid-feedback
+  Mensagem de erro do campo. Fica escondida e aparece quando o
+  campo recebe a classe is-invalid (o validation.js vai fazer isso).
+  Cada uma tem um id ligado ao campo por aria-describedby, para o
+  leitor de tela ler o erro.
+  Onde: abaixo de cada campo dos formulários de tecnologia e sessão.
+
+--- 12.6 Alerta ---
+
+alert
+  Caixa de mensagem com fundo, borda e preenchimento.
+  Onde: bloco de erro do carregamento inicial.
+
+alert-danger
+  Variação vermelha do alerta (erro).
+  Onde: o mesmo bloco, que também tem role="alert" para ser lido
+  na hora pelo leitor de tela.
+
+--- 12.7 Spinner (carregando) ---
+
+spinner-border
+  Círculo girando que indica carregamento. Recebe role="status"
+  e um texto visually-hidden "Carregando…".
+  Onde: bloco de carregamento e botões dos formulários.
+
+spinner-border-sm
+  Spinner pequeno, do tamanho do texto.
+  Onde: dentro dos botões Salvar, Registrar sessão e Excluir,
+  junto com d-none (aparece só durante a requisição).
+
+--- 12.8 List group ---
+
+list-group
+  Lista com itens separados por linhas.
+  Onde: lista de sessões no modal de detalhes.
+
+list-group-flush
+  Remove a borda externa e os cantos, para a lista "colar" no
+  modal.
+  Onde: lista de sessões.
+
+list-group-item
+  Cada item da lista.
+  Onde: cada sessão (data, minutos, anotação e botão Excluir).
+
+--- 12.9 Modal ---
+
+Os três modais (tecnologia, detalhes e confirmação) seguem a mesma
+estrutura:
+
+  .modal > .modal-dialog > .modal-content >
+      .modal-header (.modal-title + .btn-close)
+      .modal-body
+      .modal-footer
+
+modal
+  Camada que cobre a página. Começa escondida e é controlada pelo
+  JavaScript do Bootstrap. Leva tabindex="-1", aria-labelledby
+  (aponta para o título) e aria-hidden.
+  Onde: #modal-tecnologia, #modal-detalhes e #modal-confirmacao.
+
+fade
+  Animação de aparecer e sumir suavemente.
+  Onde: os três modais.
+
+modal-dialog
+  A "janela" do modal, que define largura e posição.
+  Onde: os três modais.
+
+modal-dialog-centered
+  Centraliza a janela na vertical.
+  Onde: modal de tecnologia e de confirmação.
+
+modal-dialog-scrollable
+  Rola só o corpo do modal quando o conteúdo é longo; cabeçalho e
+  botão de fechar ficam sempre visíveis.
+  Onde: modal de detalhes (a lista de sessões pode crescer).
+
+modal-lg
+  Janela mais larga.
+  Onde: modal de detalhes.
+
+modal-fullscreen-sm-down
+  Abaixo de 576px, o modal ocupa a tela inteira (checklist 10).
+  Onde: os três modais.
+
+modal-content
+  A caixa visível da janela (fundo, borda).
+  Onde: os três modais.
+
+modal-header
+  Topo do modal, com título e botão de fechar.
+  Onde: os três modais.
+
+modal-title
+  Título do modal.
+  Onde: os <h2> dos modais.
+
+modal-body
+  Conteúdo principal do modal.
+  Onde: os três modais.
+
+modal-footer
+  Rodapé com os botões de ação, alinhados à direita.
+  Onde: modal de tecnologia e de confirmação.
+
+--- 12.10 Toast ---
+
+toast-container
+  Área que empilha os toasts quando aparecem vários.
+  Onde: #area-toasts, que tem aria-live="polite" para o leitor de
+  tela anunciar as mensagens sem interromper o usuário.
+
+toast
+  A notificação em si. Começa escondida; o JavaScript a mostra e
+  ela some sozinha depois de alguns segundos.
+  Onde: dentro do <template id="template-toast">. O ui.js vai
+  clonar esse modelo, trocar o texto com textContent e exibir.
+
+toast-body
+  Texto da notificação.
+  Onde: "[OK] Tecnologia salva" no modelo.
+
+
+---------------------------------------------------------------------
+ 13. ATRIBUTOS data-bs-* (JAVASCRIPT DO BOOTSTRAP SEM ESCREVER JS)
+---------------------------------------------------------------------
+
+data-bs-theme="dark"
+  Na <html>: ativa o modo escuro (veja a parte 2).
+
+data-bs-toggle="modal"
+  No botão: ao clicar, abre um modal.
+
+data-bs-target="#id-do-modal"
+  Diz QUAL modal o data-bs-toggle abre.
+  Onde: "+ Nova tecnologia", "Cadastrar tecnologia" e "Editar"
+  abrem #modal-tecnologia; "Detalhes" abre #modal-detalhes;
+  "Excluir" abre #modal-confirmacao.
+
+data-bs-dismiss="modal" / data-bs-dismiss="toast"
+  Fecha o modal ou o toast em que o botão está.
+  Onde: botões "X" e "Cancelar".
+
+  -> Esses atributos não são onclick: quem cuida do clique é o
+     JavaScript do Bootstrap, então a regra "nenhum onclick no
+     HTML" do plano continua valendo. Os atributos data-id e
+     data-action NÃO são do Bootstrap: são do próprio projeto e
+     serão lidos pelo main.js (delegação de eventos).
+
+
+---------------------------------------------------------------------
+ 14. CLASSES QUE O JAVASCRIPT VAI ADICIONAR DEPOIS
+---------------------------------------------------------------------
+
+Estas não estão no index.html ainda, mas fazem parte do Bootstrap
+e serão usadas pelos scripts:
+
+is-invalid
+  Marca o campo com erro (borda vermelha) e faz aparecer o
+  .invalid-feedback logo abaixo dele. Vai junto com
+  aria-invalid="true".
+
+show
+  O Bootstrap a adiciona sozinho quando um modal ou toast está
+  visível. Não é preciso colocar à mão.
+
+
+---------------------------------------------------------------------
+ 15. CLASSES PRÓPRIAS DO PROJETO (NÃO SÃO DO BOOTSTRAP)
+---------------------------------------------------------------------
+
+Usam o prefixo "hk-" (de Hacker) para não se confundirem com as do
+Bootstrap. Ainda não têm estilo: serão definidas no css/style.css.
+
+hk-titulo
+  Título em formato de prompt, com brilho leve.
+
+hk-cursor
+  Cursor "_" piscando depois do prompt. Tem aria-hidden="true",
+  pois é só decoração.
+
+hk-nivel
+  Barra de nível [■■■□□] em verde. Tem role="img" e
+  aria-label="Nível 3 de 5" para o leitor de tela.

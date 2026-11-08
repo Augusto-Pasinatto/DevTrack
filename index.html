@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="pt-BR" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DevTrack — Acompanhamento de Aprendizado Dev</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="visually-hidden-focusable" href="#conteudo">Pular para o conteúdo</a>
+
+  <!-- ===== Cabeçalho ===== -->
+  <header class="border-bottom py-3">
+    <div class="container d-flex flex-wrap align-items-center justify-content-between gap-3">
+      <h1 class="h4 mb-0 hk-titulo">
+        <span class="visually-hidden">DevTrack</span>
+        <span aria-hidden="true">devtrack@local:~$</span>
+        <span class="hk-cursor" aria-hidden="true">_</span>
+      </h1>
+
+      <nav aria-label="Seções da página">
+        <ul class="nav">
+          <li class="nav-item"><a class="nav-link" href="#resumo">Resumo</a></li>
+          <li class="nav-item"><a class="nav-link" href="#tecnologias">Tecnologias</a></li>
+        </ul>
+      </nav>
+
+      <button type="button" class="btn btn-outline-success" data-action="nova-tecnologia"
+              data-bs-toggle="modal" data-bs-target="#modal-tecnologia">
+        + Nova tecnologia
+      </button>
+    </div>
+  </header>
+
+  <main id="conteudo" class="container py-4">
+
+    <!-- ===== Resumo (dashboard) ===== -->
+    <section id="resumo" class="mb-5" aria-labelledby="titulo-resumo">
+      <h2 id="titulo-resumo" class="h5 mb-3">Resumo</h2>
+
+      <div class="row row-cols-2 row-cols-lg-4 g-3">
+        <div class="col">
+          <article class="card h-100">
+            <div class="card-body">
+              <h3 class="card-subtitle h6 text-body-secondary mb-2">Total de tecnologias</h3>
+              <p id="resumo-total" class="card-text fs-3 fw-bold mb-0">3</p>
+            </div>
+          </article>
+        </div>
+        <div class="col">
+          <article class="card h-100">
+            <div class="card-body">
+              <h3 class="card-subtitle h6 text-body-secondary mb-2">Estudando</h3>
+              <p id="resumo-estudando" class="card-text fs-3 fw-bold mb-0">1</p>
+            </div>
+          </article>
+        </div>
+        <div class="col">
+          <article class="card h-100">
+            <div class="card-body">
+              <h3 class="card-subtitle h6 text-body-secondary mb-2">Horas no mês</h3>
+              <p id="resumo-horas" class="card-text fs-3 fw-bold mb-0">4,5 h</p>
+            </div>
+          </article>
+        </div>
+        <div class="col">
+          <article class="card h-100">
+            <div class="card-body">
+              <h3 class="card-subtitle h6 text-body-secondary mb-2">Mais estudada</h3>
+              <p id="resumo-mais-estudada" class="card-text fs-3 fw-bold mb-0 text-truncate">JavaScript</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Painel de tecnologias ===== -->
+    <section id="tecnologias" aria-labelledby="titulo-tecnologias">
+      <h2 id="titulo-tecnologias" class="h5 mb-3">Tecnologias</h2>
+
+      <!-- Filtros e ordenação (aplicados no front, sem nova requisição) -->
+      <form id="form-filtros" class="row g-2 mb-4" role="search" aria-label="Filtrar tecnologias">
+        <div class="col-12 col-md-4">
+          <label for="filtro-busca" class="form-label">Buscar por nome</label>
+          <input type="search" id="filtro-busca" class="form-control" placeholder="ex.: JavaScript" autocomplete="off">
+        </div>
+        <div class="col-6 col-md-3">
+          <label for="filtro-categoria" class="form-label">Categoria</label>
+          <select id="filtro-categoria" class="form-select">
+            <option value="">Todas</option>
+            <option value="linguagem">Linguagem</option>
+            <option value="framework">Framework</option>
+            <option value="ferramenta">Ferramenta</option>
+            <option value="conceito">Conceito</option>
+          </select>
+        </div>
+        <div class="col-6 col-md-2">
+          <label for="filtro-status" class="form-label">Status</label>
+          <select id="filtro-status" class="form-select">
+            <option value="">Todos</option>
+            <option value="quero-aprender">Quero aprender</option>
+            <option value="estudando">Estudando</option>
+            <option value="domino">Domino</option>
+          </select>
+        </div>
+        <div class="col-12 col-md-3">
+          <label for="filtro-ordem" class="form-label">Ordenar por</label>
+          <select id="filtro-ordem" class="form-select">
+            <option value="nome">Nome (A–Z)</option>
+            <option value="nivel">Nível (maior primeiro)</option>
+            <option value="recentes">Mais recentes</option>
+          </select>
+        </div>
+      </form>
+
+      <!-- Estado: carregando (o JS mostra/esconde com d-none) -->
+      <div id="estado-carregando" class="text-center py-5 d-none">
+        <div class="spinner-border text-success" role="status">
+          <span class="visually-hidden">Carregando…</span>
+        </div>
+      </div>
+
+      <!-- Estado: erro no carregamento inicial -->
+      <div id="estado-erro" class="alert alert-danger d-none" role="alert">
+        <p class="mb-2">Não foi possível conectar ao servidor. Tente novamente.</p>
+        <button type="button" class="btn btn-outline-danger btn-sm" data-action="tentar-novamente">Tentar novamente</button>
+      </div>
+
+      <!-- Estado: lista vazia -->
+      <div id="estado-vazio" class="text-center py-5 d-none">
+        <p class="text-body-secondary">Você ainda não cadastrou nenhuma tecnologia.</p>
+        <button type="button" class="btn btn-success" data-action="nova-tecnologia"
+                data-bs-toggle="modal" data-bs-target="#modal-tecnologia">
+          Cadastrar tecnologia
+        </button>
+      </div>
+
+      <!-- Grade de cards: 1 coluna no celular, 2 no tablet, 3 no desktop -->
+      <div id="lista-tecnologias" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+
+        <!-- Card de exemplo 1 -->
+        <div class="col">
+          <article class="card h-100">
+            <div class="card-body d-flex flex-column gap-3">
+              <div class="d-flex justify-content-between align-items-start gap-2">
+                <h3 class="card-title h5 mb-0 text-break">JavaScript</h3>
+                <span class="badge border border-warning text-warning">[ESTUDANDO]</span>
+              </div>
+              <div>
+                <span class="badge border border-secondary text-body-secondary">LINGUAGEM</span>
+              </div>
+              <p class="card-text small text-body-secondary mb-0">Meta: Dominar async/await e Fetch</p>
+
+              <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-outline-success" data-id="1" data-action="diminuir-nivel"
+                        aria-label="Diminuir nível de JavaScript">−</button>
+                <span class="hk-nivel" role="img" aria-label="Nível 3 de 5">[■■■□□]</span>
+                <button type="button" class="btn btn-outline-success" data-id="1" data-action="aumentar-nivel"
+                        aria-label="Aumentar nível de JavaScript">+</button>
+              </div>
+
+              <div>
+                <label for="status-1" class="form-label small mb-1">Status</label>
+                <select id="status-1" class="form-select form-select-sm" data-id="1" data-action="mudar-status">
+                  <option value="quero-aprender">Quero aprender</option>
+                  <option value="estudando" selected>Estudando</option>
+                  <option value="domino">Domino</option>
+                </select>
+              </div>
+            </div>
+            <div class="card-footer d-flex flex-wrap gap-2">
+              <button type="button" class="btn btn-outline-info btn-sm" data-id="1" data-action="detalhes"
+                      data-bs-toggle="modal" data-bs-target="#modal-detalhes" aria-label="Detalhes de JavaScript">Detalhes</button>
+              <button type="button" class="btn btn-outline-light btn-sm" data-id="1" data-action="editar"
+                      data-bs-toggle="modal" data-bs-target="#modal-tecnologia" aria-label="Editar JavaScript">Editar</button>
+              <button type="button" class="btn btn-outline-danger btn-sm ms-auto" data-id="1" data-action="excluir"
+                      data-bs-toggle="modal" data-bs-target="#modal-confirmacao" aria-label="Excluir JavaScript">Excluir</button>
+            </div>
+          </article>
+        </div>
+
+        <!-- Card de exemplo 2 -->
+        <div class="col">
+          <article class="card h-100">
+            <div class="card-body d-flex flex-column gap-3">
+              <div class="d-flex justify-content-between align-items-start gap-2">
+                <h3 class="card-title h5 mb-0 text-break">Bootstrap</h3>
+                <span class="badge border border-info text-info">[QUERO APRENDER]</span>
+              </div>
+              <div>
+                <span class="badge border border-secondary text-body-secondary">FRAMEWORK</span>
+              </div>
+              <p class="card-text small text-body-secondary mb-0">Meta: Montar layouts responsivos com o grid</p>
+
+              <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-outline-success" data-id="2" data-action="diminuir-nivel"
+                        aria-label="Diminuir nível de Bootstrap">−</button>
+                <span class="hk-nivel" role="img" aria-label="Nível 1 de 5">[■□□□□]</span>
+                <button type="button" class="btn btn-outline-success" data-id="2" data-action="aumentar-nivel"
+                        aria-label="Aumentar nível de Bootstrap">+</button>
+              </div>
+
+              <div>
+                <label for="status-2" class="form-label small mb-1">Status</label>
+                <select id="status-2" class="form-select form-select-sm" data-id="2" data-action="mudar-status">
+                  <option value="quero-aprender" selected>Quero aprender</option>
+                  <option value="estudando">Estudando</option>
+                  <option value="domino">Domino</option>
+                </select>
+              </div>
+            </div>
+            <div class="card-footer d-flex flex-wrap gap-2">
+              <button type="button" class="btn btn-outline-info btn-sm" data-id="2" data-action="detalhes"
+                      data-bs-toggle="modal" data-bs-target="#modal-detalhes" aria-label="Detalhes de Bootstrap">Detalhes</button>
+              <button type="button" class="btn btn-outline-light btn-sm" data-id="2" data-action="editar"
+                      data-bs-toggle="modal" data-bs-target="#modal-tecnologia" aria-label="Editar Bootstrap">Editar</button>
+              <button type="button" class="btn btn-outline-danger btn-sm ms-auto" data-id="2" data-action="excluir"
+                      data-bs-toggle="modal" data-bs-target="#modal-confirmacao" aria-label="Excluir Bootstrap">Excluir</button>
+            </div>
+          </article>
+        </div>
+
+        <!-- Card de exemplo 3 -->
+        <div class="col">
+          <article class="card h-100">
+            <div class="card-body d-flex flex-column gap-3">
+              <div class="d-flex justify-content-between align-items-start gap-2">
+                <h3 class="card-title h5 mb-0 text-break">Git</h3>
+                <span class="badge border border-success text-success">[DOMINO]</span>
+              </div>
+              <div>
+                <span class="badge border border-secondary text-body-secondary">FERRAMENTA</span>
+              </div>
+              <p class="card-text small text-body-secondary mb-0">Meta: Usar rebase e branches com segurança</p>
+
+              <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-outline-success" data-id="3" data-action="diminuir-nivel"
+                        aria-label="Diminuir nível de Git">−</button>
+                <span class="hk-nivel" role="img" aria-label="Nível 4 de 5">[■■■■□]</span>
+                <button type="button" class="btn btn-outline-success" data-id="3" data-action="aumentar-nivel"
+                        aria-label="Aumentar nível de Git">+</button>
+              </div>
+
+              <div>
+                <label for="status-3" class="form-label small mb-1">Status</label>
+                <select id="status-3" class="form-select form-select-sm" data-id="3" data-action="mudar-status">
+                  <option value="quero-aprender">Quero aprender</option>
+                  <option value="estudando">Estudando</option>
+                  <option value="domino" selected>Domino</option>
+                </select>
+              </div>
+            </div>
+            <div class="card-footer d-flex flex-wrap gap-2">
+              <button type="button" class="btn btn-outline-info btn-sm" data-id="3" data-action="detalhes"
+                      data-bs-toggle="modal" data-bs-target="#modal-detalhes" aria-label="Detalhes de Git">Detalhes</button>
+              <button type="button" class="btn btn-outline-light btn-sm" data-id="3" data-action="editar"
+                      data-bs-toggle="modal" data-bs-target="#modal-tecnologia" aria-label="Editar Git">Editar</button>
+              <button type="button" class="btn btn-outline-danger btn-sm ms-auto" data-id="3" data-action="excluir"
+                      data-bs-toggle="modal" data-bs-target="#modal-confirmacao" aria-label="Excluir Git">Excluir</button>
+            </div>
+          </article>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== Rodapé ===== -->
+  <footer class="border-top py-3 mt-5">
+    <div class="container small text-body-secondary">
+      DevTrack · Programação de Aplicações Web I · UCS
+    </div>
+  </footer>
+
+  <!-- ===== Modal: criar / editar tecnologia (POST e PUT) ===== -->
+  <div class="modal fade" id="modal-tecnologia" tabindex="-1" aria-labelledby="modal-tecnologia-titulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+      <div class="modal-content">
+        <form id="form-tecnologia" novalidate>
+          <div class="modal-header">
+            <h2 id="modal-tecnologia-titulo" class="modal-title h5">Nova tecnologia</h2>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+          </div>
+
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="tec-nome" class="form-label">Nome</label>
+              <input type="text" id="tec-nome" name="nome" class="form-control" required minlength="2" maxlength="40"
+                     aria-describedby="tec-nome-erro">
+              <div id="tec-nome-erro" class="invalid-feedback">Informe um nome entre 2 e 40 caracteres.</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="tec-categoria" class="form-label">Categoria</label>
+              <select id="tec-categoria" name="categoria" class="form-select" required aria-describedby="tec-categoria-erro">
+                <option value="">Selecione…</option>
+                <option value="linguagem">Linguagem</option>
+                <option value="framework">Framework</option>
+                <option value="ferramenta">Ferramenta</option>
+                <option value="conceito">Conceito</option>
+              </select>
+              <div id="tec-categoria-erro" class="invalid-feedback">Escolha uma categoria.</div>
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-6">
+                <label for="tec-nivel" class="form-label">Nível (1 a 5)</label>
+                <input type="number" id="tec-nivel" name="nivel" class="form-control" required min="1" max="5" step="1" value="1"
+                       aria-describedby="tec-nivel-erro">
+                <div id="tec-nivel-erro" class="invalid-feedback">O nível deve ser um número inteiro de 1 a 5.</div>
+              </div>
+              <div class="col-6">
+                <label for="tec-status" class="form-label">Status</label>
+                <select id="tec-status" name="status" class="form-select" required aria-describedby="tec-status-erro">
+                  <option value="quero-aprender">Quero aprender</option>
+                  <option value="estudando">Estudando</option>
+                  <option value="domino">Domino</option>
+                </select>
+                <div id="tec-status-erro" class="invalid-feedback">Escolha um status.</div>
+              </div>
+            </div>
+
+            <div>
+              <label for="tec-meta" class="form-label">Meta <span class="text-body-secondary">(opcional)</span></label>
+              <textarea id="tec-meta" name="meta" class="form-control" rows="2" maxlength="120"
+                        aria-describedby="tec-meta-ajuda tec-meta-erro"></textarea>
+              <div id="tec-meta-ajuda" class="form-text">Até 120 caracteres.</div>
+              <div id="tec-meta-erro" class="invalid-feedback">A meta pode ter no máximo 120 caracteres.</div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-success">
+              <span class="spinner-border spinner-border-sm me-1 d-none" aria-hidden="true"></span>
+              Salvar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Modal: detalhes da tecnologia + sessões ===== -->
+  <div class="modal fade" id="modal-detalhes" tabindex="-1" aria-labelledby="modal-detalhes-titulo" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-fullscreen-sm-down">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modal-detalhes-titulo" class="modal-title h5">JavaScript</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+
+        <div class="modal-body">
+          <dl class="row mb-4">
+            <dt class="col-sm-4">Categoria</dt>
+            <dd class="col-sm-8">Linguagem</dd>
+            <dt class="col-sm-4">Status</dt>
+            <dd class="col-sm-8"><span class="badge border border-warning text-warning">[ESTUDANDO]</span></dd>
+            <dt class="col-sm-4">Nível</dt>
+            <dd class="col-sm-8"><span class="hk-nivel" role="img" aria-label="Nível 3 de 5">[■■■□□]</span></dd>
+            <dt class="col-sm-4">Meta</dt>
+            <dd class="col-sm-8">Dominar async/await e Fetch</dd>
+            <dt class="col-sm-4">Total estudado</dt>
+            <dd class="col-sm-8 fw-bold">3 h 15 min</dd>
+          </dl>
+
+          <section class="mb-4" aria-labelledby="titulo-registrar-sessao">
+            <h3 id="titulo-registrar-sessao" class="h6">Registrar sessão</h3>
+            <form id="form-sessao" class="row g-2 align-items-start" novalidate>
+              <div class="col-6 col-md-3">
+                <label for="sessao-data" class="form-label">Data</label>
+                <input type="date" id="sessao-data" name="data" class="form-control" required aria-describedby="sessao-data-erro">
+                <div id="sessao-data-erro" class="invalid-feedback">Informe uma data que não esteja no futuro.</div>
+              </div>
+              <div class="col-6 col-md-3">
+                <label for="sessao-minutos" class="form-label">Minutos</label>
+                <input type="number" id="sessao-minutos" name="minutos" class="form-control" required min="5" max="600" step="1"
+                       aria-describedby="sessao-minutos-erro">
+                <div id="sessao-minutos-erro" class="invalid-feedback">Use um número inteiro de 5 a 600.</div>
+              </div>
+              <div class="col-12 col-md-6">
+                <label for="sessao-anotacao" class="form-label">Anotação <span class="text-body-secondary">(opcional)</span></label>
+                <input type="text" id="sessao-anotacao" name="anotacao" class="form-control" maxlength="200"
+                       aria-describedby="sessao-anotacao-erro">
+                <div id="sessao-anotacao-erro" class="invalid-feedback">A anotação pode ter no máximo 200 caracteres.</div>
+              </div>
+              <div class="col-12">
+                <button type="submit" class="btn btn-success">
+                  <span class="spinner-border spinner-border-sm me-1 d-none" aria-hidden="true"></span>
+                  Registrar sessão
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <section aria-labelledby="titulo-sessoes">
+            <h3 id="titulo-sessoes" class="h6">Sessões</h3>
+            <ul id="lista-sessoes" class="list-group list-group-flush">
+              <li class="list-group-item d-flex justify-content-between align-items-start gap-2 px-0">
+                <div>
+                  <p class="mb-1"><time datetime="2026-11-06" class="fw-bold">06/11/2026</time> · 45 min</p>
+                  <p class="small text-body-secondary mb-0">Estudei Promise.all</p>
+                </div>
+                <button type="button" class="btn btn-outline-danger btn-sm" data-id="1" data-action="excluir-sessao"
+                        aria-label="Excluir sessão de 06/11/2026">Excluir</button>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-start gap-2 px-0">
+                <div>
+                  <p class="mb-1"><time datetime="2026-11-04" class="fw-bold">04/11/2026</time> · 90 min</p>
+                  <p class="small text-body-secondary mb-0">Fetch API com async/await</p>
+                </div>
+                <button type="button" class="btn btn-outline-danger btn-sm" data-id="2" data-action="excluir-sessao"
+                        aria-label="Excluir sessão de 04/11/2026">Excluir</button>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-start gap-2 px-0">
+                <div>
+                  <p class="mb-1"><time datetime="2026-11-01" class="fw-bold">01/11/2026</time> · 60 min</p>
+                  <p class="small text-body-secondary mb-0">Revisão de Promises</p>
+                </div>
+                <button type="button" class="btn btn-outline-danger btn-sm" data-id="3" data-action="excluir-sessao"
+                        aria-label="Excluir sessão de 01/11/2026">Excluir</button>
+              </li>
+            </ul>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Modal: confirmação de exclusão (no lugar de confirm()) ===== -->
+  <div class="modal fade" id="modal-confirmacao" tabindex="-1" aria-labelledby="modal-confirmacao-titulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modal-confirmacao-titulo" class="modal-title h5">Excluir tecnologia</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-0">Excluir <strong>JavaScript</strong> e as 3 sessões dela? Esta ação não pode ser desfeita.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-danger" data-action="confirmar-exclusao">
+            <span class="spinner-border spinner-border-sm me-1 d-none" aria-hidden="true"></span>
+            Excluir
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Toasts (região anunciada por leitores de tela) ===== -->
+  <div id="area-toasts" class="toast-container position-fixed bottom-0 end-0 p-3" aria-live="polite" aria-atomic="false"></div>
+
+  <!-- Modelo de toast: o ui.js clona este template, preenche com textContent e mostra -->
+  <template id="template-toast">
+    <div class="toast align-items-center border-success" role="status" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">[OK] Tecnologia salva</div>
+        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Fechar"></button>
+      </div>
+    </div>
+  </template>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
