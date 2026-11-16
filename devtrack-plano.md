@@ -186,9 +186,9 @@ devtrack/
 ## 8. Back-end: desenvolvimento local → MockAPI no final
 
 ### Durante o desenvolvimento
-1. `npm install -g json-server`
+1. `npm install` (instala o json-server **0.17.4**, fixado no `package.json`; a versão 1 não filtra ids em string)
 2. Criar um `db.json` com `"tecnologias": [...]` e `"sessoes": [...]`, usando ids **em string** (como o MockAPI).
-3. `json-server --watch db.json --port 3000`
+3. `npm run api` (equivale a `json-server db.json --host 127.0.0.1 --port 3000`, sem `--watch`)
 4. Em `config.js`: `export const BASE_URL = "http://127.0.0.1:3000";`
 
 ### Migração para o MockAPI (etapa final)
@@ -242,10 +242,10 @@ devtrack/
 - [x] Dashboard calculado
 
 ### Fase 3: Escrita
-- [ ] Criar tecnologia (POST) com validação
-- [ ] Editar tecnologia (PUT), reaproveitando o mesmo modal
-- [ ] Nível +/− e status rápido (PATCH)
-- [ ] Excluir tecnologia com confirmação e cascata (DELETE)
+- [x] Criar tecnologia (POST) com validação
+- [x] Editar tecnologia (PUT), reaproveitando o mesmo modal
+- [x] Nível +/− e status rápido (PATCH)
+- [x] Excluir tecnologia com confirmação e cascata (DELETE)
 
 ### Fase 4: Sessões
 - [ ] Painel de detalhes (GET único + GET filtrado)

@@ -41,3 +41,87 @@ export function mostrarToast(mensagem, tipo = "ok") {
   toast.addEventListener("hidden.bs.toast", () => toast.remove());
   window.bootstrap.Toast.getOrCreateInstance(toast).show();
 }
+
+// ---------- Spinner nos botões ----------
+
+// Desabilita o botão e mostra o spinner dele enquanto a requisição roda.
+export function setCarregando(botao, carregando) {
+  botao.disabled = carregando;
+  botao.setAttribute("aria-busy", String(carregando));
+  botao.querySelector(".spinner-border")?.classList.toggle("d-none", !carregando);
+}
+
+// ---------- Modais ----------
+
+const BOTAO_PADRAO_FOCO = '[data-action="nova-tecnologia"]';
+
+/**
+ * Abre um modal lembrando qual botão o abriu. Ao fechar, o foco volta para
+ * esse botão; se ele tiver sido redesenhado, procura o equivalente (mesmo
+ * data-id e data-action); se não existir mais, vai para "Nova tecnologia".
+ */
+export function abrirModal(elemento, origem) {
+  const { id, action } = origem?.dataset ?? {};
+
+  elemento.addEventListener("hidden.bs.modal", () => {
+    const equivalente = id && action
+      ? document.querySelector(`[data-action="${action}"][data-id="${CSS.escape(id)}"]`)
+      : null;
+    const destino = [origem, equivalente, document.querySelector(BOTAO_PADRAO_FOCO)]
+      .find((el) => el?.isConnected && !el.disabled && el.offsetParent !== null);
+    destino?.focus();
+  }, { once: true });
+
+  window.bootstrap.Modal.getOrCreateInstance(elemento).show();
+}
+
+export function fecharModal(elemento) {
+  window.bootstrap.Modal.getOrCreateInstance(elemento).hide();
+}
+
+// Depois de redesenhar a lista, devolve o foco ao botão equivalente do card.
+// `acoes` em ordem de preferência (ex.: "+" chegou a 5 e ficou desabilitado → "−").
+export function focarBotaoDoCard(id, acoes) {
+  for (const acao of acoes) {
+    const botao = document.querySelector(`[data-action="${acao}"][data-id="${CSS.escape(String(id))}"]`);
+    if (botao && !botao.disabled) {
+      botao.focus();
+      return;
+    }
+  }
+}
+
+// ---------- Erros de formulário ----------
+
+// Marca (ou desmarca, se `mensagem` for vazia) um campo como inválido.
+export function marcarCampo(campo, mensagem) {
+  const feedback = document.getElementById(`${campo.id}-erro`);
+  campo.classList.toggle("is-invalid", Boolean(mensagem));
+  if (mensagem) {
+    campo.setAttribute("aria-invalid", "true");
+    if (feedback) feedback.textContent = mensagem;
+  } else {
+    campo.removeAttribute("aria-invalid");
+  }
+}
+
+/**
+ * Aplica o resultado da validação em todos os campos do formulário e
+ * leva o foco ao primeiro campo com erro. Devolve true se não houver erros.
+ */
+export function mostrarErrosFormulario(form, erros) {
+  let primeiro = null;
+  for (const campo of form.elements) {
+    if (!campo.name) continue;
+    marcarCampo(campo, erros[campo.name]);
+    if (erros[campo.name] && !primeiro) primeiro = campo;
+  }
+  primeiro?.focus();
+  return primeiro === null;
+}
+
+export function limparErrosFormulario(form) {
+  for (const campo of form.elements) {
+    if (campo.name) marcarCampo(campo, null);
+  }
+}

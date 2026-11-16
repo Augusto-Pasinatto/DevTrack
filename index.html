@@ -31,8 +31,7 @@
         </ul>
       </nav>
 
-      <button type="button" class="btn btn-outline-success" data-action="nova-tecnologia"
-              data-bs-toggle="modal" data-bs-target="#modal-tecnologia">
+      <button type="button" class="btn btn-outline-success" data-action="nova-tecnologia">
         + Nova tecnologia
       </button>
     </div>
@@ -135,8 +134,7 @@
       <!-- Estado: lista vazia -->
       <div id="estado-vazio" class="text-center py-5 d-none">
         <p class="text-body-secondary">Você ainda não cadastrou nenhuma tecnologia.</p>
-        <button type="button" class="btn btn-success" data-action="nova-tecnologia"
-                data-bs-toggle="modal" data-bs-target="#modal-tecnologia">
+        <button type="button" class="btn btn-success" data-action="nova-tecnologia">
           Cadastrar tecnologia
         </button>
       </div>
@@ -321,7 +319,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
         </div>
         <div class="modal-body">
-          <p class="mb-0">Excluir <strong>JavaScript</strong> e as 3 sessões dela? Esta ação não pode ser desfeita.</p>
+          <p id="confirmacao-texto" class="mb-0"></p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>

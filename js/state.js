@@ -20,6 +20,37 @@ export function setFiltros(parcial) {
   Object.assign(state.filtros, parcial);
 }
 
+// ---------- Tecnologias ----------
+
+const mesmoId = (a, b) => String(a) === String(b);
+
+export function getTecnologia(id) {
+  return state.tecnologias.find((tec) => mesmoId(tec.id, id));
+}
+
+export function adicionarTecnologia(tecnologia) {
+  state.tecnologias.push(tecnologia);
+}
+
+export function substituirTecnologia(tecnologia) {
+  const indice = state.tecnologias.findIndex((tec) => mesmoId(tec.id, tecnologia.id));
+  if (indice !== -1) state.tecnologias[indice] = tecnologia;
+}
+
+// Remove a tecnologia e as sessões dela da memória.
+export function removerTecnologia(id) {
+  state.tecnologias = state.tecnologias.filter((tec) => !mesmoId(tec.id, id));
+  state.sessoes = state.sessoes.filter((sessao) => !mesmoId(sessao.tecnologiaId, id));
+}
+
+export function contarSessoes(tecnologiaId) {
+  return state.sessoes.filter((sessao) => mesmoId(sessao.tecnologiaId, tecnologiaId)).length;
+}
+
+export function setSessoes(sessoes) {
+  state.sessoes = sessoes;
+}
+
 // Minúsculas e sem acentos, para a busca não depender disso.
 function normalizar(texto) {
   return texto.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
