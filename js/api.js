@@ -2,6 +2,8 @@
 import { BASE_URL } from "./config.js";
 
 const MENSAGEM_SEM_CONEXAO = "Não foi possível conectar ao servidor. Tente novamente.";
+const MENSAGEM_RESPOSTA_INVALIDA =
+  "O servidor respondeu em um formato inesperado. Confira se a API está rodando no endereço configurado.";
 
 // Erro da API com o status HTTP (0 = falha de rede).
 export class ApiError extends Error {
@@ -42,7 +44,14 @@ async function request(path, { method = "GET", body } = {}) {
   }
 
   const texto = await response.text();
-  return texto ? JSON.parse(texto) : null;
+  if (!texto) return null;
+
+  try {
+    return JSON.parse(texto);
+  } catch {
+    // Respondeu, mas não com JSON (ex.: outro programa na mesma porta devolvendo HTML).
+    throw new ApiError(response.status, MENSAGEM_RESPOSTA_INVALIDA);
+  }
 }
 
 // ---------- Tecnologias ----------
