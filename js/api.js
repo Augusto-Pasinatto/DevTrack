@@ -1,1 +1,94 @@
 // funções de fetch (uma por operação)
+import { BASE_URL } from "./config.js";
+
+const MENSAGEM_SEM_CONEXAO = "Não foi possível conectar ao servidor. Tente novamente.";
+
+// Erro da API com o status HTTP (0 = falha de rede).
+export class ApiError extends Error {
+  constructor(status, mensagem) {
+    super(mensagem);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
+
+function mensagemPorStatus(status) {
+  if (status === 404) return "O item não foi encontrado. Ele pode ter sido excluído.";
+  if (status >= 500) return "O servidor encontrou um problema. Tente novamente mais tarde.";
+  return `Não foi possível concluir a operação (erro ${status}).`;
+}
+
+/**
+ * Base de todas as chamadas: faz o fetch, confere response.ok,
+ * converte a resposta para JSON e lança ApiError em caso de falha.
+ * `body`, se informado, é convertido para JSON aqui.
+ */
+async function request(path, { method = "GET", body } = {}) {
+  const opcoes = { method };
+  if (body !== undefined) {
+    opcoes.headers = { "Content-Type": "application/json" };
+    opcoes.body = JSON.stringify(body);
+  }
+
+  let response;
+  try {
+    response = await fetch(`${BASE_URL}${path}`, opcoes);
+  } catch {
+    throw new ApiError(0, MENSAGEM_SEM_CONEXAO);
+  }
+
+  if (!response.ok) {
+    throw new ApiError(response.status, mensagemPorStatus(response.status));
+  }
+
+  const texto = await response.text();
+  return texto ? JSON.parse(texto) : null;
+}
+
+// ---------- Tecnologias ----------
+
+export function getTecnologias() {
+  return request("/tecnologias");
+}
+
+export function getTecnologia(id) {
+  return request(`/tecnologias/${encodeURIComponent(id)}`);
+}
+
+export function createTecnologia(dados) {
+  return request("/tecnologias", {
+    method: "POST",
+    body: { ...dados, criadoEm: new Date().toISOString() },
+  });
+}
+
+export function updateTecnologia(id, dados) {
+  return request(`/tecnologias/${encodeURIComponent(id)}`, { method: "PUT", body: dados });
+}
+
+export function patchTecnologia(id, campos) {
+  return request(`/tecnologias/${encodeURIComponent(id)}`, { method: "PATCH", body: campos });
+}
+
+export function deleteTecnologia(id) {
+  return request(`/tecnologias/${encodeURIComponent(id)}`, { method: "DELETE" });
+}
+
+// ---------- Sessões ----------
+
+// Sem argumento, traz todas as sessões (usado no resumo).
+// Com tecnologiaId, usa o filtro ?tecnologiaId= (json-server e MockAPI).
+export function getSessoes(tecnologiaId) {
+  const filtro = tecnologiaId === undefined
+    ? ""
+    : `?${new URLSearchParams({ tecnologiaId })}`;
+  return request(`/sessoes${filtro}`);
+}
+
+export function createSessao(dados) {
+  return request("/sessoes", { method: "POST", body: dados });
+}
+
+export function deleteSessao(id) {
+  return request(`/sessoes/${encodeURIComponent(id)}`, { method: "DELETE" });
+}

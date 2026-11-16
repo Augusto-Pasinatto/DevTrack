@@ -231,15 +231,15 @@ devtrack/
 ## 11. Plano de execução (fases)
 
 ### Fase 1: Estrutura
-- [ ] `index.html` semântico com cabeçalho, dashboard, filtros, grade e modais (estáticos)
+- [x] `index.html` semântico com cabeçalho, dashboard, filtros, grade e modais (estáticos)
 - [ ] Bootstrap + `style.css` com o tema Hacker (variáveis, tipografia e componentes da seção 14)
-- [ ] `db.json` com 5–6 tecnologias e algumas sessões de exemplo
+- [x] `db.json` com 5–6 tecnologias e algumas sessões de exemplo
 
 ### Fase 2: Leitura (GET)
-- [ ] `api.js` com `request()` e tratamento de erro
-- [ ] Carregar e renderizar os cards, com estados de carregando, vazio e erro
-- [ ] Filtros, busca e ordenação no front
-- [ ] Dashboard calculado
+- [x] `api.js` com `request()` e tratamento de erro
+- [x] Carregar e renderizar os cards, com estados de carregando, vazio e erro
+- [x] Filtros, busca e ordenação no front
+- [x] Dashboard calculado
 
 ### Fase 3: Escrita
 - [ ] Criar tecnologia (POST) com validação
