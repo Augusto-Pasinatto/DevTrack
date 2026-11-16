@@ -6,7 +6,7 @@ Aplicação web para acompanhar o aprendizado de linguagens, frameworks e ferram
 
 1. Instale o json-server: `npm install -g json-server`
 2. Na pasta do projeto, suba a API com os dados de exemplo: `json-server db.json --port 3000`
-   - Confira se `http://localhost:3000/tecnologias` mostra uma lista em JSON. Se aparecer uma página HTML, outro programa está usando a porta 3000: feche-o ou use outra porta (por exemplo `--port 3001`) e ajuste a `BASE_URL`.
+   - Confira se `http://127.0.0.1:3000/tecnologias` mostra uma lista em JSON. Usamos `127.0.0.1` em vez de `localhost` porque algumas redes bloqueiam `localhost` pelo proxy. Se aparecer uma página HTML, a rede ou outro programa na porta 3000 está respondendo no lugar do json-server.
 3. Abra o `index.html` com o Live Server do VS Code.
 
 A URL da API fica em `js/config.js` (`BASE_URL`).

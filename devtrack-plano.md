@@ -189,7 +189,7 @@ devtrack/
 1. `npm install -g json-server`
 2. Criar um `db.json` com `"tecnologias": [...]` e `"sessoes": [...]`, usando ids **em string** (como o MockAPI).
 3. `json-server --watch db.json --port 3000`
-4. Em `config.js`: `export const BASE_URL = "http://localhost:3000";`
+4. Em `config.js`: `export const BASE_URL = "http://127.0.0.1:3000";`
 
 ### Migração para o MockAPI (etapa final)
 1. Criar o projeto no MockAPI e os 2 recursos, `tecnologias` e `sessoes`, com os mesmos campos da seção 2.

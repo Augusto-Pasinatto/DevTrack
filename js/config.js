@@ -1,7 +1,7 @@
 // BASE_URL (troca local ↔ MockAPI aqui)
 // Desenvolvimento: json-server local. No final, trocar pela URL do MockAPI
 // (ex.: "https://<id>.mockapi.io/api/v1").
-export const BASE_URL = "http://localhost:3000";
+export const BASE_URL = "http://127.0.0.1:3000";
 
 // Valores aceitos pela API e como aparecem na interface.
 export const CATEGORIAS = {
