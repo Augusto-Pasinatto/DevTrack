@@ -45,7 +45,6 @@ export function criarBadgeStatus(status) {
 
 export function criarNivel(nivel) {
   return el("span", {
-    classe: "hk-nivel",
     texto: barraNivel(nivel),
     attrs: { role: "img", "aria-label": `Nível ${nivel} de ${NIVEL_MAX}` },
   });
