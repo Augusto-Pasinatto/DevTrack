@@ -52,12 +52,12 @@ O que **continua igual**: filtros (busca, categoria e status), ordenação por n
 | **GET** | Carregar o painel de tecnologias | `GET /tecnologias` |
 | **POST** | Botão "+ Nova tecnologia" | `POST /tecnologias` |
 | **PUT** | Modal "Editar" (objeto completo, inclusive o nível) | `PUT /tecnologias/:id` |
-| **PATCH** | Seletor rápido de status no card | `PATCH /tecnologias/:id` com `{ "status": "domino" }` |
+| **PUT** | Seletor rápido de status no card (objeto completo com o novo status) | `PUT /tecnologias/:id` |
 | **DELETE** | Botão "Excluir" (com confirmação) | `DELETE /tecnologias/:id` |
 
 > `getTecnologia(id)` (GET único) continua no `api.js`, mas hoje nenhuma tela usa. Ver a seção 6.
 
-> **Atenção: o MockAPI não aceita PATCH.** O preflight de CORS dele responde `Access-Control-Allow-Methods: GET,PUT,POST,DELETE,OPTIONS`, então o navegador bloqueia o PATCH do status rápido (testado em 23/11/2026). O app trata o erro (volta ao status anterior e registra `[ERRO]` no console), mas a função não funciona com o MockAPI. Com o json-server local, funciona. Ver "Falta fazer".
+> **Sem PATCH: o MockAPI não aceita esse verbo.** O preflight de CORS dele responde `Access-Control-Allow-Methods: GET,PUT,POST,DELETE,OPTIONS`, e o navegador bloqueava o PATCH do status rápido (testado em 23/11/2026). Por isso o status rápido passou a usar **PUT** com o objeto completo, e `patchTecnologia()` saiu do `api.js`. Consequência: o projeto **não usa mais o verbo PATCH**, que aparece na lista de verbos do enunciado. Se isso for cobrado na avaliação, vale explicar essa limitação do MockAPI na apresentação.
 
 ---
 
@@ -69,7 +69,7 @@ O que **continua igual**: filtros (busca, categoria e status), ordenação por n
 - [x] Cards com estados de carregando, vazio e erro
 - [x] Filtros e busca no front; ordenação por nome e por nível
 - [x] Criar (POST) e editar (PUT) no mesmo modal, com validação no blur e no submit
-- [x] Status rápido (PATCH) com atualização otimista e volta ao valor anterior se falhar
+- [x] Status rápido (PUT) com atualização otimista e volta ao valor anterior se falhar
 - [x] Excluir (DELETE) com modal de confirmação
 - [x] Feedback de sucesso e erro no `console.log`
 
@@ -78,8 +78,8 @@ O que **continua igual**: filtros (busca, categoria e status), ordenação por n
 - [ ] **Migração para o MockAPI**
   - [ ] Tirar a barra final do `BASE_URL` em `js/config.js`: como os caminhos já começam com `/`, a URL fica `.../api/v1//tecnologias`. O MockAPI aceita, mas é melhor deixar limpo.
   - [x] No MockAPI, deixar o recurso `tecnologias` só com os campos da seção 2 (sem `criadoEm`) e apagar o recurso `sessoes`.
-  - [x] Testar cada verbo contra o MockAPI: GET, POST, PUT e DELETE funcionam; **PATCH é bloqueado** (ver a seção 3).
-  - [ ] **Decidir o que fazer com o PATCH:** trocar o status rápido por um PUT com o objeto completo (funciona no MockAPI, mas o projeto deixa de usar o verbo PATCH) ou manter o PATCH e apresentar essa parte com o json-server.
+  - [x] Testar cada verbo contra o MockAPI: GET, POST, PUT e DELETE funcionam; PATCH é bloqueado (ver a seção 3).
+  - [x] Trocar o PATCH do status rápido por PUT com o objeto completo.
   - [x] Cadastrar dados reais para a apresentação.
 - [ ] **Revisar a acessibilidade** (checklist 9 do plano original, sem os itens de toast e de botões +/−)
 - [ ] **Revisar a responsividade** (checklist 10 do plano original), principalmente o cabeçalho em ~375px

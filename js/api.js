@@ -72,10 +72,6 @@ export function updateTecnologia(id, dados) {
   return request(`/tecnologias/${encodeURIComponent(id)}`, { method: "PUT", body: dados });
 }
 
-export function patchTecnologia(id, campos) {
-  return request(`/tecnologias/${encodeURIComponent(id)}`, { method: "PATCH", body: campos });
-}
-
 export function deleteTecnologia(id) {
   return request(`/tecnologias/${encodeURIComponent(id)}`, { method: "DELETE" });
 }

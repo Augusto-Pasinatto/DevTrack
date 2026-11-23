@@ -170,11 +170,12 @@ formTecnologia.addEventListener("submit", salvarTecnologia);
 modalTecnologia.addEventListener("shown.bs.modal", () => formTecnologia.elements.nome.focus());
 
 // ====================================================================
-// PATCH — status rápido no card, com atualização otimista
+// PUT — status rápido no card, com atualização otimista
+// (o MockAPI não aceita PATCH, então vai o objeto completo)
 // ====================================================================
 
 /**
- * Atualiza a tela na hora e manda o PATCH. Se falhar, volta ao status
+ * Atualiza a tela na hora e manda o PUT. Se falhar, volta ao status
  * anterior (desde que ninguém tenha mudado o campo de novo nesse meio-tempo).
  */
 async function mudarStatus(tecnologia, status) {
@@ -186,7 +187,8 @@ async function mudarStatus(tecnologia, status) {
   focarControleDoCard(tecnologia.id, "mudar-status");
 
   try {
-    await api.patchTecnologia(tecnologia.id, { status });
+    const { nome, categoria, nivel, meta } = tecnologia;
+    await api.updateTecnologia(tecnologia.id, { nome, categoria, nivel, status, meta });
     console.log(`[OK] ${tecnologia.nome}: status alterado para "${STATUS[status].rotulo}"`);
   } catch (erro) {
     if (tecnologia.status === status) {
