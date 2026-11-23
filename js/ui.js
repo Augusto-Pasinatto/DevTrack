@@ -1,4 +1,4 @@
-// toasts, spinners, modais de confirmação
+// spinners, modais e estados da tela
 
 const estados = {
   carregando: document.getElementById("estado-carregando"),
@@ -17,29 +17,6 @@ export function mostrarEstado(nome, mensagem) {
     elemento.classList.toggle("d-none", chave !== nome);
   }
   if (nome === "erro" && mensagem) mensagemErro.textContent = mensagem;
-}
-
-// ---------- Toasts ----------
-
-const areaToasts = document.getElementById("area-toasts");
-const templateToast = document.getElementById("template-toast");
-
-const TIPOS_TOAST = {
-  ok: { prefixo: "[OK]", borda: "border-success" },
-  erro: { prefixo: "[ERRO]", borda: "border-danger" },
-};
-
-export function mostrarToast(mensagem, tipo = "ok") {
-  const { prefixo, borda } = TIPOS_TOAST[tipo] ?? TIPOS_TOAST.ok;
-  const toast = templateToast.content.firstElementChild.cloneNode(true);
-
-  toast.classList.remove("border-success");
-  toast.classList.add(borda);
-  toast.querySelector(".toast-body").textContent = `${prefixo} ${mensagem}`;
-
-  areaToasts.append(toast);
-  toast.addEventListener("hidden.bs.toast", () => toast.remove());
-  window.bootstrap.Toast.getOrCreateInstance(toast).show();
 }
 
 // ---------- Spinner nos botões ----------
@@ -79,16 +56,9 @@ export function fecharModal(elemento) {
   window.bootstrap.Modal.getOrCreateInstance(elemento).hide();
 }
 
-// Depois de redesenhar a lista, devolve o foco ao botão equivalente do card.
-// `acoes` em ordem de preferência (ex.: "+" chegou a 5 e ficou desabilitado → "−").
-export function focarBotaoDoCard(id, acoes) {
-  for (const acao of acoes) {
-    const botao = document.querySelector(`[data-action="${acao}"][data-id="${CSS.escape(String(id))}"]`);
-    if (botao && !botao.disabled) {
-      botao.focus();
-      return;
-    }
-  }
+// Depois de redesenhar a lista, devolve o foco ao controle equivalente do card.
+export function focarControleDoCard(id, acao) {
+  document.querySelector(`[data-action="${acao}"][data-id="${CSS.escape(String(id))}"]`)?.focus();
 }
 
 // ---------- Erros de formulário ----------

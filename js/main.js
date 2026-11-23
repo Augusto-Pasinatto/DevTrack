@@ -1,14 +1,14 @@
 // inicialização e listeners de eventos
 import * as api from "./api.js";
-import { STATUS, NIVEL_MIN, NIVEL_MAX } from "./config.js";
+import { STATUS } from "./config.js";
 import {
-  state, setDados, setFiltros, setSessoes, getTecnologiasVisiveis, getResumo,
-  getTecnologia, adicionarTecnologia, substituirTecnologia, removerTecnologia, contarSessoes,
+  state, setTecnologias, setFiltros, getTecnologiasVisiveis,
+  getTecnologia, adicionarTecnologia, substituirTecnologia, removerTecnologia,
 } from "./state.js";
-import { renderTecnologias, renderResumo, limparTecnologias } from "./render.js";
+import { renderTecnologias, limparTecnologias } from "./render.js";
 import { validarTecnologia } from "./validation.js";
 import {
-  mostrarEstado, mostrarToast, setCarregando, abrirModal, fecharModal, focarBotaoDoCard,
+  mostrarEstado, setCarregando, abrirModal, fecharModal, focarControleDoCard,
   marcarCampo, mostrarErrosFormulario, limparErrosFormulario,
 } from "./ui.js";
 
@@ -25,10 +25,8 @@ const modalConfirmacao = document.getElementById("modal-confirmacao");
 const textoConfirmacao = document.getElementById("confirmacao-texto");
 const botaoConfirmarExclusao = modalConfirmacao.querySelector('[data-action="confirmar-exclusao"]');
 
-// Redesenha resumo e lista a partir do state (sem requisição).
+// Redesenha a lista a partir do state (sem requisição).
 function atualizarTela() {
-  renderResumo(getResumo());
-
   if (state.tecnologias.length === 0) {
     limparTecnologias();
     mostrarEstado("vazio");
@@ -43,19 +41,18 @@ function atualizarTela() {
 // GET — carregamento inicial
 // ====================================================================
 
-// Tecnologias + sessões (as sessões alimentam o resumo).
 async function carregarDados() {
   mostrarEstado("carregando");
   botaoTentarNovamente.disabled = true;
 
   try {
-    const [tecnologias, sessoes] = await Promise.all([api.getTecnologias(), api.getSessoes()]);
-    setDados({ tecnologias, sessoes });
+    setTecnologias(await api.getTecnologias());
     atualizarTela();
+    console.log(`[OK] ${state.tecnologias.length} tecnologia(s) carregada(s)`);
   } catch (erro) {
     limparTecnologias();
-    renderResumo(null);
     mostrarEstado("erro", erro.message);
+    console.log(`[ERRO] ${erro.message}`);
   } finally {
     botaoTentarNovamente.disabled = false;
   }
@@ -132,20 +129,18 @@ async function salvarTecnologia(evento) {
 
   try {
     if (editando) {
-      // PUT envia o objeto completo (mantendo a data de criação original).
-      const original = getTecnologia(idEmEdicao);
-      const atualizada = await api.updateTecnologia(idEmEdicao, { ...dados, criadoEm: original?.criadoEm });
-      substituirTecnologia(atualizada);
+      // PUT envia o objeto completo.
+      substituirTecnologia(await api.updateTecnologia(idEmEdicao, dados));
     } else {
       adicionarTecnologia(await api.createTecnologia(dados));
     }
 
     fecharModal(modalTecnologia);
     atualizarTela();
-    mostrarToast(editando ? "Tecnologia atualizada" : "Tecnologia salva");
+    console.log(`[OK] ${editando ? "Tecnologia atualizada" : "Tecnologia salva"}: ${dados.nome}`);
   } catch (erro) {
     // O modal continua aberto com o que o usuário digitou.
-    mostrarToast(erro.message, "erro");
+    console.log(`[ERRO] ${erro.message}`);
   } finally {
     setCarregando(botaoSalvar, false);
   }
@@ -175,65 +170,46 @@ formTecnologia.addEventListener("submit", salvarTecnologia);
 modalTecnologia.addEventListener("shown.bs.modal", () => formTecnologia.elements.nome.focus());
 
 // ====================================================================
-// PATCH — nível (+/−) e status rápido, com atualização otimista
+// PATCH — status rápido no card, com atualização otimista
 // ====================================================================
 
 /**
- * Atualiza a tela na hora e manda o PATCH. Se falhar, volta ao valor
+ * Atualiza a tela na hora e manda o PATCH. Se falhar, volta ao status
  * anterior (desde que ninguém tenha mudado o campo de novo nesse meio-tempo).
  */
-async function patchOtimista(tecnologia, campo, valor, { acoesFoco, mensagemOk }) {
-  const anterior = tecnologia[campo];
-  tecnologia[campo] = valor;
+async function mudarStatus(tecnologia, status) {
+  if (!STATUS[status] || status === tecnologia.status) return;
+
+  const anterior = tecnologia.status;
+  tecnologia.status = status;
   atualizarTela();
-  focarBotaoDoCard(tecnologia.id, acoesFoco);
+  focarControleDoCard(tecnologia.id, "mudar-status");
 
   try {
-    await api.patchTecnologia(tecnologia.id, { [campo]: valor });
-    mostrarToast(mensagemOk);
+    await api.patchTecnologia(tecnologia.id, { status });
+    console.log(`[OK] ${tecnologia.nome}: status alterado para "${STATUS[status].rotulo}"`);
   } catch (erro) {
-    if (tecnologia[campo] === valor) {
-      tecnologia[campo] = anterior;
+    if (tecnologia.status === status) {
+      tecnologia.status = anterior;
       atualizarTela();
-      focarBotaoDoCard(tecnologia.id, acoesFoco);
+      focarControleDoCard(tecnologia.id, "mudar-status");
     }
-    mostrarToast(erro.message, "erro");
+    console.log(`[ERRO] ${erro.message}`);
   }
 }
 
-function mudarNivel(tecnologia, delta, acao) {
-  const novo = Math.min(NIVEL_MAX, Math.max(NIVEL_MIN, tecnologia.nivel + delta));
-  if (novo === tecnologia.nivel) return;
-
-  const outra = acao === "aumentar-nivel" ? "diminuir-nivel" : "aumentar-nivel";
-  patchOtimista(tecnologia, "nivel", novo, {
-    acoesFoco: [acao, outra],
-    mensagemOk: `Nível de ${tecnologia.nome}: ${novo} de ${NIVEL_MAX}`,
-  });
-}
-
-function mudarStatus(tecnologia, status) {
-  if (!STATUS[status] || status === tecnologia.status) return;
-  patchOtimista(tecnologia, "status", status, {
-    acoesFoco: ["mudar-status"],
-    mensagemOk: `${tecnologia.nome}: status alterado para "${STATUS[status].rotulo}"`,
-  });
-}
-
 // ====================================================================
-// DELETE — exclusão com confirmação e cascata das sessões
+// DELETE — exclusão com confirmação
 // ====================================================================
 
 let idParaExcluir = null;
 
 function abrirConfirmacaoExclusao(origem, tecnologia) {
   idParaExcluir = tecnologia.id;
-  const total = contarSessoes(tecnologia.id);
-  const sessoes = total === 0 ? "" : total === 1 ? " e a 1 sessão dela" : ` e as ${total} sessões dela`;
 
   const nome = document.createElement("strong");
   nome.textContent = tecnologia.nome;
-  textoConfirmacao.replaceChildren("Excluir ", nome, `${sessoes}? Esta ação não pode ser desfeita.`);
+  textoConfirmacao.replaceChildren("Excluir ", nome, "? Esta ação não pode ser desfeita.");
 
   abrirModal(modalConfirmacao, origem);
 }
@@ -245,24 +221,13 @@ async function confirmarExclusao() {
   setCarregando(botaoConfirmarExclusao, true);
 
   try {
-    // O MockAPI não exclui em cascata: primeiro as sessões, depois a tecnologia.
-    const sessoes = await api.getSessoes(tecnologia.id);
-    await Promise.all(sessoes.map((sessao) => api.deleteSessao(sessao.id)));
     await api.deleteTecnologia(tecnologia.id);
-
     removerTecnologia(tecnologia.id);
     fecharModal(modalConfirmacao);
     atualizarTela();
-    mostrarToast(`${tecnologia.nome} excluída`);
+    console.log(`[OK] ${tecnologia.nome} excluída`);
   } catch (erro) {
-    // Parte das sessões pode ter sido excluída: sincroniza o resumo com o servidor.
-    try {
-      setSessoes(await api.getSessoes());
-      atualizarTela();
-    } catch {
-      // Sem conexão: mantém o que já está na tela.
-    }
-    mostrarToast(erro.message, "erro");
+    console.log(`[ERRO] ${erro.message}`);
   } finally {
     setCarregando(botaoConfirmarExclusao, false);
   }
@@ -282,19 +247,12 @@ listaTecnologias.addEventListener("click", (evento) => {
   if (!tecnologia) return;
 
   switch (botao.dataset.action) {
-    case "aumentar-nivel":
-      mudarNivel(tecnologia, +1, "aumentar-nivel");
-      break;
-    case "diminuir-nivel":
-      mudarNivel(tecnologia, -1, "diminuir-nivel");
-      break;
     case "editar":
       abrirModalTecnologia(botao, tecnologia);
       break;
     case "excluir":
       abrirConfirmacaoExclusao(botao, tecnologia);
       break;
-    // "detalhes" entra na Fase 4.
   }
 });
 

@@ -1,16 +1,10 @@
 // funções que montam/atualizam o DOM
 // Não faz fetch: só recebe dados e desenha. Usa textContent/createElement
 // (nunca innerHTML com dados do usuário).
-import { CATEGORIAS, STATUS, NIVEL_MIN, NIVEL_MAX } from "./config.js";
+import { CATEGORIAS, STATUS, NIVEL_MAX } from "./config.js";
 
 const listaTecnologias = document.getElementById("lista-tecnologias");
 const contagemTecnologias = document.getElementById("contagem-tecnologias");
-const resumo = {
-  total: document.getElementById("resumo-total"),
-  estudando: document.getElementById("resumo-estudando"),
-  horas: document.getElementById("resumo-horas"),
-  maisEstudada: document.getElementById("resumo-mais-estudada"),
-};
 
 // Cria um elemento com classes, texto e atributos.
 function el(tag, { classe, texto, attrs } = {}, ...filhos) {
@@ -23,11 +17,6 @@ function el(tag, { classe, texto, attrs } = {}, ...filhos) {
 }
 
 // ---------- Formatação ----------
-
-export function formatarHoras(minutos) {
-  const horas = minutos / 60;
-  return `${horas.toLocaleString("pt-BR", { maximumFractionDigits: 1 })} h`;
-}
 
 export function barraNivel(nivel) {
   return `[${"■".repeat(nivel)}${"□".repeat(NIVEL_MAX - nivel)}]`;
@@ -81,11 +70,8 @@ function criarCard(tec) {
     corpo.append(el("p", { classe: "card-text small text-body-secondary mb-0", texto: `Meta: ${tec.meta}` }));
   }
 
-  const diminuir = criarBotao("−", "btn-outline-success", tec, "diminuir-nivel", `Diminuir nível de ${nome}`);
-  const aumentar = criarBotao("+", "btn-outline-success", tec, "aumentar-nivel", `Aumentar nível de ${nome}`);
-  diminuir.disabled = tec.nivel <= NIVEL_MIN;
-  aumentar.disabled = tec.nivel >= NIVEL_MAX;
-  corpo.append(el("div", { classe: "d-flex align-items-center gap-2" }, diminuir, criarNivel(tec.nivel), aumentar));
+  // O nível só é alterado no modal de edição; aqui ele é apenas exibido.
+  corpo.append(el("div", {}, criarNivel(tec.nivel)));
 
   const idSelect = `status-${tec.id}`;
   const select = el("select", {
@@ -103,7 +89,6 @@ function criarCard(tec) {
   ));
 
   const rodape = el("div", { classe: "card-footer d-flex flex-wrap gap-2" },
-    criarBotao("Detalhes", "btn-outline-info btn-sm", tec, "detalhes", `Detalhes de ${nome}`),
     criarBotao("Editar", "btn-outline-light btn-sm", tec, "editar", `Editar ${nome}`),
     criarBotao("Excluir", "btn-outline-danger btn-sm ms-auto", tec, "excluir", `Excluir ${nome}`),
   );
@@ -130,15 +115,4 @@ export function renderTecnologias(lista, totalCadastradas) {
 export function limparTecnologias() {
   listaTecnologias.replaceChildren();
   contagemTecnologias.textContent = "";
-}
-
-export function renderResumo(dados) {
-  if (!dados) {
-    for (const campo of Object.values(resumo)) campo.textContent = "—";
-    return;
-  }
-  resumo.total.textContent = String(dados.total);
-  resumo.estudando.textContent = String(dados.estudando);
-  resumo.horas.textContent = formatarHoras(dados.minutosNoMes);
-  resumo.maisEstudada.textContent = dados.maisEstudada?.nome ?? "—";
 }

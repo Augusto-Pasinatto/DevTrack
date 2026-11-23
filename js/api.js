@@ -65,10 +65,7 @@ export function getTecnologia(id) {
 }
 
 export function createTecnologia(dados) {
-  return request("/tecnologias", {
-    method: "POST",
-    body: { ...dados, criadoEm: new Date().toISOString() },
-  });
+  return request("/tecnologias", { method: "POST", body: dados });
 }
 
 export function updateTecnologia(id, dados) {
@@ -81,23 +78,4 @@ export function patchTecnologia(id, campos) {
 
 export function deleteTecnologia(id) {
   return request(`/tecnologias/${encodeURIComponent(id)}`, { method: "DELETE" });
-}
-
-// ---------- Sessões ----------
-
-// Sem argumento, traz todas as sessões (usado no resumo).
-// Com tecnologiaId, usa o filtro ?tecnologiaId= (json-server e MockAPI).
-export function getSessoes(tecnologiaId) {
-  const filtro = tecnologiaId === undefined
-    ? ""
-    : `?${new URLSearchParams({ tecnologiaId })}`;
-  return request(`/sessoes${filtro}`);
-}
-
-export function createSessao(dados) {
-  return request("/sessoes", { method: "POST", body: dados });
-}
-
-export function deleteSessao(id) {
-  return request(`/sessoes/${encodeURIComponent(id)}`, { method: "DELETE" });
 }

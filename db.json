@@ -6,8 +6,7 @@
       "categoria": "linguagem",
       "nivel": 3,
       "status": "estudando",
-      "meta": "Dominar async/await e Fetch",
-      "criadoEm": "2026-10-05T18:00:00.000Z"
+      "meta": "Dominar async/await e Fetch"
     },
     {
       "id": "2",
@@ -15,8 +14,7 @@
       "categoria": "framework",
       "nivel": 2,
       "status": "estudando",
-      "meta": "Montar layouts responsivos com o grid",
-      "criadoEm": "2026-10-12T20:30:00.000Z"
+      "meta": "Montar layouts responsivos com o grid"
     },
     {
       "id": "3",
@@ -24,8 +22,7 @@
       "categoria": "ferramenta",
       "nivel": 4,
       "status": "domino",
-      "meta": "Usar rebase e branches com segurança",
-      "criadoEm": "2026-09-20T14:15:00.000Z"
+      "meta": "Usar rebase e branches com segurança"
     },
     {
       "id": "4",
@@ -33,8 +30,7 @@
       "categoria": "linguagem",
       "nivel": 4,
       "status": "domino",
-      "meta": "Escrever HTML semântico e acessível",
-      "criadoEm": "2026-09-15T10:00:00.000Z"
+      "meta": "Escrever HTML semântico e acessível"
     },
     {
       "id": "5",
@@ -42,8 +38,7 @@
       "categoria": "framework",
       "nivel": 1,
       "status": "quero-aprender",
-      "meta": "Entender componentes e hooks",
-      "criadoEm": "2026-11-02T22:45:00.000Z"
+      "meta": "Entender componentes e hooks"
     },
     {
       "id": "6",
@@ -51,20 +46,7 @@
       "categoria": "conceito",
       "nivel": 2,
       "status": "estudando",
-      "meta": "Aplicar as WCAG nos meus projetos",
-      "criadoEm": "2026-10-28T19:20:00.000Z"
+      "meta": "Aplicar as WCAG nos meus projetos"
     }
-  ],
-  "sessoes": [
-    { "id": "1", "tecnologiaId": "1", "data": "2026-11-06", "minutos": 45, "anotacao": "Estudei Promise.all" },
-    { "id": "2", "tecnologiaId": "1", "data": "2026-11-04", "minutos": 90, "anotacao": "Fetch API com async/await" },
-    { "id": "3", "tecnologiaId": "1", "data": "2026-11-01", "minutos": 60, "anotacao": "Revisão de Promises" },
-    { "id": "4", "tecnologiaId": "1", "data": "2026-10-15", "minutos": 75, "anotacao": "Módulos ES (import/export)" },
-    { "id": "5", "tecnologiaId": "2", "data": "2026-11-10", "minutos": 50, "anotacao": "Grid e breakpoints" },
-    { "id": "6", "tecnologiaId": "2", "data": "2026-10-20", "minutos": 40, "anotacao": "Componentes: cards e modais" },
-    { "id": "7", "tecnologiaId": "3", "data": "2026-11-12", "minutos": 25, "anotacao": "git rebase interativo" },
-    { "id": "8", "tecnologiaId": "3", "data": "2026-10-02", "minutos": 30, "anotacao": "Branches e merge" },
-    { "id": "9", "tecnologiaId": "4", "data": "2026-09-25", "minutos": 120, "anotacao": "Tags semânticas e formulários" },
-    { "id": "10", "tecnologiaId": "6", "data": "2026-11-14", "minutos": 35, "anotacao": "Contraste e aria-label" }
   ]
 }
