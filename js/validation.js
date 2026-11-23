@@ -3,7 +3,7 @@
 // Objeto vazio = tudo certo. Quem marca os campos na tela é o ui.js.
 import { CATEGORIAS, STATUS, NIVEL_MIN, NIVEL_MAX } from "./config.js";
 
-export const LIMITES = {
+const LIMITES = {
   nomeMin: 2,
   nomeMax: 40,
   metaMax: 120,

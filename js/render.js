@@ -18,13 +18,13 @@ function el(tag, { classe, texto, attrs } = {}, ...filhos) {
 
 // ---------- Formatação ----------
 
-export function barraNivel(nivel) {
+function barraNivel(nivel) {
   return `[${"■".repeat(nivel)}${"□".repeat(NIVEL_MAX - nivel)}]`;
 }
 
 // ---------- Peças reaproveitáveis ----------
 
-export function criarBadgeStatus(status) {
+function criarBadgeStatus(status) {
   const info = STATUS[status] ?? { rotulo: status, cor: "secondary" };
   return el("span", {
     classe: `badge border border-${info.cor} text-${info.cor}`,
@@ -32,7 +32,7 @@ export function criarBadgeStatus(status) {
   });
 }
 
-export function criarNivel(nivel) {
+function criarNivel(nivel) {
   return el("span", {
     texto: barraNivel(nivel),
     attrs: { role: "img", "aria-label": `Nível ${nivel} de ${NIVEL_MAX}` },

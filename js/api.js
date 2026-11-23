@@ -3,16 +3,7 @@ import { BASE_URL } from "./config.js";
 
 const MENSAGEM_SEM_CONEXAO = "Não foi possível conectar ao servidor. Tente novamente.";
 const MENSAGEM_RESPOSTA_INVALIDA =
-  "O servidor respondeu em um formato inesperado. Confira se a API está rodando no endereço configurado.";
-
-// Erro da API com o status HTTP (0 = falha de rede).
-export class ApiError extends Error {
-  constructor(status, mensagem) {
-    super(mensagem);
-    this.name = "ApiError";
-    this.status = status;
-  }
-}
+  "O servidor respondeu em um formato inesperado. Confira se o endereço da API está correto.";
 
 function mensagemPorStatus(status) {
   if (status === 404) return "O item não foi encontrado. Ele pode ter sido excluído.";
@@ -22,7 +13,7 @@ function mensagemPorStatus(status) {
 
 /**
  * Base de todas as chamadas: faz o fetch, confere response.ok,
- * converte a resposta para JSON e lança ApiError em caso de falha.
+ * converte a resposta para JSON e lança um Error com mensagem amigável.
  * `body`, se informado, é convertido para JSON aqui.
  */
 async function request(path, { method = "GET", body } = {}) {
@@ -36,11 +27,11 @@ async function request(path, { method = "GET", body } = {}) {
   try {
     response = await fetch(`${BASE_URL}${path}`, opcoes);
   } catch {
-    throw new ApiError(0, MENSAGEM_SEM_CONEXAO);
+    throw new Error(MENSAGEM_SEM_CONEXAO);
   }
 
   if (!response.ok) {
-    throw new ApiError(response.status, mensagemPorStatus(response.status));
+    throw new Error(mensagemPorStatus(response.status));
   }
 
   const texto = await response.text();
@@ -49,8 +40,8 @@ async function request(path, { method = "GET", body } = {}) {
   try {
     return JSON.parse(texto);
   } catch {
-    // Respondeu, mas não com JSON (ex.: outro programa na mesma porta devolvendo HTML).
-    throw new ApiError(response.status, MENSAGEM_RESPOSTA_INVALIDA);
+    // Respondeu, mas não com JSON (ex.: BASE_URL errado devolvendo uma página HTML).
+    throw new Error(MENSAGEM_RESPOSTA_INVALIDA);
   }
 }
 
@@ -58,10 +49,6 @@ async function request(path, { method = "GET", body } = {}) {
 
 export function getTecnologias() {
   return request("/tecnologias");
-}
-
-export function getTecnologia(id) {
-  return request(`/tecnologias/${encodeURIComponent(id)}`);
 }
 
 export function createTecnologia(dados) {
